@@ -1,4 +1,18 @@
-#include "split.h"
+#include <was/storage_account.h>
+#include <was/blob.h>
+#include <cpprest/filestream.h>  
+#include <cpprest/containerstream.h>
+#include <iostream>
+#include <string>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <cstdlib> 
+#include <fstream>
+using namespace std;
+
 // Define the connection-string with your values.
 const utility::string_t storage_connection_string(U("DefaultEndpointsProtocol=https;AccountName=yuhaostore;AccountKey=HbHTkS+eQAV2FxKOl/Ec0zRK8MqDk8Nybn0E/q7EoKJ3/NmpKSfzvavx+XywCQopwEyZ1O59tTJ1NSrnmp44vw=="));
 
@@ -56,7 +70,8 @@ int download_file(string download_file_name, string blobname) {
 
 }
 
-std::ifstream::pos_type filesize(string filename) {
+std::ifstream::pos_type filesize(string filename)
+{
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
     return in.tellg(); 
 }

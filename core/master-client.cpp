@@ -5,7 +5,7 @@
 #include <grpc++/grpc++.h>
 
 #include "rpc_generated/master-worker.grpc.pb.h"
-#include "split.h"
+#include "split_file.cpp"
 
 using grpc::Channel;
 using grpc::ClientContext;
