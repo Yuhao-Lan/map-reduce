@@ -1,0 +1,24 @@
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.helloworld";
+option java_outer_classname = "HelloWorldProto";
+option objc_class_prefix = "HLW";
+
+package masterworker;
+
+// The greeting service definition.
+service Worker {
+  
+  rpc StartMapper (Filename) returns (Filename) {}
+  rpc StartReducer (Filenames) returns (Filename) {}
+}
+
+message Filename {
+  string filename = 1;
+}
+
+message Filenames {
+  string filenames = 1;
+}
