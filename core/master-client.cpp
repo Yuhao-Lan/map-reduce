@@ -5,6 +5,7 @@
 #include <grpc++/grpc++.h>
 
 #include "rpc_generated/master-worker.grpc.pb.h"
+#include "split.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -50,11 +51,12 @@ class MasterClient {
 
 int main(int argc, char** argv) {
     // upload input file to blob
+
     // split input file into N chunks
     // create M clients, where M is the number of worker nodes
     // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
     // wait all N pthreds to finish, and start reducers
-  MasterClient cli(grpc::CreateChannel("myVMDeployed1:50051", grpc::InsecureChannelCredentials()));
+  MasterClient cli(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
   std::string input_filename("this_is_the_file_for_map_reduce.txt");
   std::string output_filename = cli.StartMapper(input_filename);
   std::cout << "Worker received: " << output_filename << std::endl;
