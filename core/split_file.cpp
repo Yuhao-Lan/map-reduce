@@ -133,23 +133,23 @@ void split_file(string fullFilePath, string chunkName, int chunk_number) {
 
 
 
-// int main() {
+int main() {
 
-//     download_file("DowloadData.txt","my-blob-1");
-//     split_file("DowloadData.txt","temp",4);
-//     for(int i = 1; i < 5; i++) {
+    download_file("DowloadData.txt","my-blob-1");
+    split_file("DowloadData.txt","temp",4);
+    for(int i = 1; i < 5; i++) {
 
-//         string inputfile = "./temp." + to_string(i);
+        string inputfile = "./temp." + to_string(i);
 
-//         string blob = "split/splitblob." + to_string(i);
+        string blob = "split/splitblob." + to_string(i);
 
-//         cout << inputfile << endl;
-//         cout << blob << endl;
+        cout << inputfile << endl;
+        cout << blob << endl;
 
-//         upload_to_blob(inputfile, blob);
-//         cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+        upload_to_blob(inputfile, blob);
+        cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
 
-//     }
+    }
 
-//     return 0;
-// }
+    return 0;
+}
