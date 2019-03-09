@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(cs8803_workshop6)
 
+SET(GCC_COVERAGE_COMPILE_FLAGS "-lazurestorage -lcpprest -lboost_system -lcrypto -lssl")
+add_definitions(${GCC_COVERAGE_COMPILE_FLAGS})
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set (CMAKE_SHARED_LINKER_FLAGS "-lazurestorage,-lcpprest,-lboost_system,-lcrypto,-lssl")
 
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
