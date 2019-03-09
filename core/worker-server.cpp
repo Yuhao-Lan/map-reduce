@@ -3,8 +3,8 @@
 #include <string>
 #include <grpc++/grpc++.h>
 #include <string>
-#include <glog/logging.h>
-#include <glog/raw_logging.h>
+// #include <glog/logging.h>
+// #include <glog/raw_logging.h>
 #include "rpc_generated/master-worker.grpc.pb.h"
 
 using grpc::Server;
