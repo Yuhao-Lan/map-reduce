@@ -14,29 +14,32 @@ using grpc::Status;
 using masterworker::Filenames;
 using masterworker::Filename;
 using masterworker::Worker;
+using namespace std;
 
 // Logic and data behind the server's behavior.
 class WorkerServiceImpl final : public Worker::Service {
 
   Status StartMapper(ServerContext* context, 
     const Filename* request, Filename* response) override {
-        LOG(INFO) << "A mapper is running with input file: " <<  request->filename();
+        cout << "A mapper is running with input file: " <<  request->filename();
+
         //download 
+
         //exec 
         //upload
         response->set_filename("Hello " + request->filename());
-        LOG(INFO) << "The mapper is done with output file: ";
+        cout << "The mapper is done with output file: ";
         return Status::OK;
   }
   Status StartReducer(ServerContext* context, 
     const Filenames* request, Filename* response) override {
-        LOG(INFO) << "A reducer is running with input files: " <<  request->filenames();
+        cout << "A reducer is running with input files: " <<  request->filenames();
         // download all the mappers' output files
         // exec sort, [partition]
         // exec("cat filename | python reduce.py > output.txt");
         // upload(output.txt);
         response->set_filename("Hello " + request->filenames());
-        LOG(INFO) << "The reducer is done with output file: ";
+        cout << "The reducer is done with output file: ";
         return Status::OK;
   }
 };
