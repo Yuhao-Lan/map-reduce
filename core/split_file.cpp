@@ -1,4 +1,12 @@
 #include "split.h"
+// Define the connection-string with your values.
+const utility::string_t storage_connection_string(U("DefaultEndpointsProtocol=https;AccountName=yuhaostore;AccountKey=HbHTkS+eQAV2FxKOl/Ec0zRK8MqDk8Nybn0E/q7EoKJ3/NmpKSfzvavx+XywCQopwEyZ1O59tTJ1NSrnmp44vw=="));
+
+// Retrieve storage account from connection string.
+azure::storage::cloud_storage_account storage_account;
+azure::storage::cloud_blob_client blob_client;
+azure::storage::cloud_blob_container container;
+azure::storage::cloud_block_blob blockBlob;
 
 int upload_to_blob(string inputfile, string blobname) {
 
