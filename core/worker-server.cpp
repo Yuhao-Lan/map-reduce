@@ -41,7 +41,7 @@ class WorkerServiceImpl final : public Worker::Service {
         // exec("cat filename | python reduce.py > output.txt");
 
 
-        std::string command = "cat " + request->filename() + " | sort | python reducer.py > " + request->filename() + "| sort -k2nr";
+        std::string command = "cat " + request->filenames() + " | sort | python reducer.py > " + request->filenames() + "| sort -k2nr";
         LOG(INFO) << "A mapper is running command: " <<  command;
         system(command.c_str());
 
