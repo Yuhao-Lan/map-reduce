@@ -4,7 +4,7 @@
 #include<stdlib.h> 
 #include<unistd.h> 
   
-pthread_t tid[5]; 
+pthread_t tid[3]; 
 pthread_mutex_t lock; 
   
 void* trythis(void *arg) 
@@ -36,7 +36,7 @@ int main(void)
         return 1; 
     } 
   
-    while(i < 5) 
+    while(i < 3) 
     { 
         error = pthread_create(&(tid[i]), NULL, &trythis, (void*) i); 
         if (error != 0) 

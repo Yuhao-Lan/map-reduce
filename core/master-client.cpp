@@ -11,6 +11,7 @@
 #include<pthread.h> 
 #include<stdlib.h> 
 #include<unistd.h> 
+  
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -18,6 +19,15 @@ using grpc::Status;
 using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
+pthread_t tid[3]; 
+
+
+struct thread_data {
+
+   char *machineip;
+   char *filename;
+
+};
 
 class MasterClient {
  public:
@@ -54,6 +64,28 @@ class MasterClient {
   std::unique_ptr<Worker::Stub> stub_;
 };
 
+
+void* trythis(void *arg) { 
+    //pthread_mutex_lock(&lock); 
+  
+  
+
+    struct thread_data *my_data;
+    my_data = (struct thread_data *) arg;
+
+    MasterClient cli(grpc::CreateChannel(my_data->machineip, grpc::InsecureChannelCredentials()));
+    std::string input_filename(my_data->filename);
+    std::string output_filename = cli.StartMapper(input_filename);
+    std::cout << "Worker received: " << output_filename << std::endl;
+
+  
+    //pthread_mutex_unlock(&lock);
+    pthread_exit(NULL);
+    // return NULL; 
+} 
+
+
+
 int main(int argc, char** argv) {
   // upload input file to blob
 
@@ -65,15 +97,41 @@ int main(int argc, char** argv) {
   // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
 
   // wait all N pthreds to finish, and start reducers
-  MasterClient cli1(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename1("this_is_from_5.txt");
-  std::string output_filename1 = cli1.StartMapper(input_filename1);
-  std::cout << "Worker received: " << output_filename1 << std::endl;
 
-  MasterClient cli2(grpc::CreateChannel("myVMDeployed4:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename2("this_is_from_4.txt");
-  std::string output_filename2 = cli2.StartMapper(input_filename2);
-  std::cout << "Worker received: " << output_filename2 << std::endl;
+  int i = 0; 
+  int error; 
+  struct thread_data td[3];
+
+  td[0].machineip = "myVMDeployed3:50051";
+  td[0].filename = "from_3.txt";
+  td[1].machineip = "myVMDeployed4:50051";
+  td[1].filename = "from_4.txt";
+  td[2].machineip = "myVMDeployed5:50051";
+  td[2].filename = "from_5.txt";
+
+
+    
+  while(i < 3) { 
+      error = pthread_create(&(tid[i]), NULL, &trythis, (void*) &td[i]); 
+      if (error != 0) 
+          printf("\nThread can't be created :[%s]", strerror(error)); 
+      i++; 
+  } 
+    pthread_join(tid[0], NULL); 
+    pthread_join(tid[1], NULL); 
+    pthread_join(tid[2], NULL); 
+  
+
+
+  // MasterClient cli1(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
+  // std::string input_filename1("this_is_from_5.txt");
+  // std::string output_filename1 = cli1.StartMapper(input_filename1);
+  // std::cout << "Worker received: " << output_filename1 << std::endl;
+
+  // MasterClient cli2(grpc::CreateChannel("myVMDeployed4:50051", grpc::InsecureChannelCredentials()));
+  // std::string input_filename2("this_is_from_4.txt");
+  // std::string output_filename2 = cli2.StartMapper(input_filename2);
+  // std::cout << "Worker received: " << output_filename2 << std::endl;
 
   return 0;
 }
