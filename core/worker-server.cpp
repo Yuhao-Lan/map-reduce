@@ -28,11 +28,11 @@ class WorkerServiceImpl final : public Worker::Service {
         system(command.c_str());
 
         //upload
-        response->set_filename("Hello " + request->filename());
+        response->set_filename("Finished:  " + request->filename());
         LOG(INFO) << "The mapper is done with output file: ";
         return Status::OK;
   }
-  
+
   Status StartReducer(ServerContext* context, 
     const Filenames* request, Filename* response) override {
         LOG(INFO) << "A reducer is running with input files: " <<  request->filenames();
@@ -41,12 +41,12 @@ class WorkerServiceImpl final : public Worker::Service {
         // exec("cat filename | python reduce.py > output.txt");
 
 
-        std::string command = "cat " + request->filenames() + " | sort | python reducer.py > " + request->filenames() + "| sort -k2nr";
+        std::string command = "cat " + request->filenames() + " | sort | python reducer.py | sort -k2nr > " + request->filenames() + "_final";
         LOG(INFO) << "A reducer is running command: " <<  command;
         system(command.c_str());
 
         // upload(output.txt);
-        response->set_filename("Hello " + request->filenames());
+        response->set_filename("Finished:  " + request->filenames());
         LOG(INFO) << "The reducer is done with output file: ";
         return Status::OK;
   }
