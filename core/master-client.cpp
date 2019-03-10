@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
   // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
 
   // wait all N pthreds to finish, and start reducers
-  MasterClient cli = new MasterClient(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
+  MasterClient cli(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
   std::string input_filename("this_is_the_file_for_map_reduce.txt");
   std::string output_filename = cli.StartMapper(input_filename);
   std::cout << "Worker received: " << output_filename << std::endl;
