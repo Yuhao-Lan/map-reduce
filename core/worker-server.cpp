@@ -42,7 +42,7 @@ class WorkerServiceImpl final : public Worker::Service {
 
 
         std::string command = "cat " + request->filenames() + " | sort | python reducer.py > " + request->filenames() + "| sort -k2nr";
-        LOG(INFO) << "A mapper is running command: " <<  command;
+        LOG(INFO) << "A reducer is running command: " <<  command;
         system(command.c_str());
 
         // upload(output.txt);
