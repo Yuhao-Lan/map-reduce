@@ -65,15 +65,15 @@ int main(int argc, char** argv) {
   // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
 
   // wait all N pthreds to finish, and start reducers
-  MasterClient cli(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename("this_is_from_5.txt");
-  std::string output_filename = cli.StartMapper(input_filename);
-  std::cout << "Worker received: " << output_filename << std::endl;
+  MasterClient cli1(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
+  std::string input_filename1("this_is_from_5.txt");
+  std::string output_filename1 = cli1.StartMapper(input_filename1);
+  std::cout << "Worker received: " << output_filename1 << std::endl;
 
-  MasterClient cli(grpc::CreateChannel("myVMDeployed4:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename("this_is_from_4.txt");
-  std::string output_filename = cli.StartMapper(input_filename);
-  std::cout << "Worker received: " << output_filename << std::endl;
+  MasterClient cli2(grpc::CreateChannel("myVMDeployed4:50051", grpc::InsecureChannelCredentials()));
+  std::string input_filename2("this_is_from_4.txt");
+  std::string output_filename2 = cli2.StartMapper(input_filename2);
+  std::cout << "Worker received: " << output_filename2 << std::endl;
 
   return 0;
 }
