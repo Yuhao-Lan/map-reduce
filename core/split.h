@@ -17,8 +17,6 @@
 using namespace std;
 
 
-
-
 int upload_to_blob(string inputfile, string blobname);
 int download_file(string download_file_name, string blobname);
 void split_file(string fullFilePath, string chunkName, int chunk_number);

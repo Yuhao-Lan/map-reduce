@@ -5,7 +5,7 @@
 #include <grpc++/grpc++.h>
 
 #include "rpc_generated/master-worker.grpc.pb.h"
-//#include "split.h"
+#include "split.h"
 #include<stdio.h> 
 #include<string.h> 
 #include<pthread.h> 
@@ -163,23 +163,23 @@ int main(int argc, char** argv) {
   pthread_join(tid[1], NULL); 
   pthread_join(tid[2], NULL); 
 
-  td[0].machineip = "myVMDeployed3:50051";
-  td[0].filename = "split.1.txt_aftermapper";
-  td[1].machineip = "myVMDeployed4:50051";
-  td[1].filename = "split.2.txt_aftermapper";
-  td[2].machineip = "myVMDeployed5:50051";
-  td[2].filename = "split.3.txt_aftermapper";
+  // td[0].machineip = "myVMDeployed3:50051";
+  // td[0].filename = "split.1.txt_aftermapper";
+  // td[1].machineip = "myVMDeployed4:50051";
+  // td[1].filename = "split.2.txt_aftermapper";
+  // td[2].machineip = "myVMDeployed5:50051";
+  // td[2].filename = "split.3.txt_aftermapper";
 
-  while(i < 3) { 
-      error = pthread_create(&(tid[i]), NULL, &startreducer, (void*) &td[i]); 
-      if (error != 0) 
-          printf("\nThread can't be created :[%s]", strerror(error)); 
-      i++; 
-  } 
+  // while(i < 3) { 
+  //     error = pthread_create(&(tid[i]), NULL, &startreducer, (void*) &td[i]); 
+  //     if (error != 0) 
+  //         printf("\nThread can't be created :[%s]", strerror(error)); 
+  //     i++; 
+  // } 
 
-  pthread_join(tid[0], NULL); 
-  pthread_join(tid[1], NULL); 
-  pthread_join(tid[2], NULL); 
+  // pthread_join(tid[0], NULL); 
+  // pthread_join(tid[1], NULL); 
+  // pthread_join(tid[2], NULL); 
 
 
 
