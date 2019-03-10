@@ -177,36 +177,16 @@ int main(int argc, char** argv) {
   pthread_join(tid1[1], NULL); 
   pthread_join(tid1[2], NULL); 
 
-  td2[0].machineip = "myVMDeployed3:50051";
-  td2[0].filename = "split.1.txt_aftermapper";
-  td2[1].machineip = "myVMDeployed4:50051";
-  td2[1].filename = "split.2.txt_aftermapper";
-  td2[2].machineip = "myVMDeployed5:50051";
-  td2[2].filename = "split.3.txt_aftermapper";
+  MasterClient cli(grpc::CreateChannel("myVMDeployed3:50051", grpc::InsecureChannelCredentials()));
+  std::string input_filename("split.1.txt_aftermapper");
+  std::string output_filename = cli.StartReducer(input_filename);
+  std::cout << "Worker-reducer received: " << output_filename << std::endl;
+  
 
-  while(i < 3) { 
-      error = pthread_create(&(tid2[i]), NULL, &startreducer, (void*) &td2[i]); 
-      if (error != 0) 
-          printf("\nThread can't be created :[%s]", strerror(error)); 
-      i++; 
-  } 
-
-  pthread_join(tid2[0], NULL); 
-  pthread_join(tid2[1], NULL); 
-  pthread_join(tid2[2], NULL); 
 
 
 
   
-  // MasterClient cli1(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
-  // std::string input_filename1("this_is_from_5.txt");
-  // std::string output_filename1 = cli1.StartMapper(input_filename1);
-  // std::cout << "Worker received: " << output_filename1 << std::endl;
-
-  // MasterClient cli2(grpc::CreateChannel("myVMDeployed4:50051", grpc::InsecureChannelCredentials()));
-  // std::string input_filename2("this_is_from_4.txt");
-  // std::string output_filename2 = cli2.StartMapper(input_filename2);
-  // std::cout << "Worker received: " << output_filename2 << std::endl;
 
   return 0;
 }
