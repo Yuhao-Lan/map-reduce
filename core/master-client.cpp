@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
   // split input file into N chunks
 
   // create M clients, where M is the number of worker nodes
+  // TODO mutli-threading
 
   // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
 
