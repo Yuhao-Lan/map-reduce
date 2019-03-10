@@ -32,6 +32,7 @@ class WorkerServiceImpl final : public Worker::Service {
         LOG(INFO) << "The mapper is done with output file: ";
         return Status::OK;
   }
+  
   Status StartReducer(ServerContext* context, 
     const Filenames* request, Filename* response) override {
         LOG(INFO) << "A reducer is running with input files: " <<  request->filenames();
