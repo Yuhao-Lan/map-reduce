@@ -1,6 +1,5 @@
 #include <iostream>
 #include <memory>
-#include <string>
 #include <grpc++/grpc++.h>
 #include <string>
 #include <glog/logging.h>
@@ -24,7 +23,7 @@ class WorkerServiceImpl final : public Worker::Service {
         //download 
 
         //exec 
-        string command = "cat " + equest->filename() + " | python mapper.py";
+        char* command = "cat " + equest->filename() + " | python mapper.py";
         LOG(INFO) << "A mapper is running command: " <<  command;
         system(command);
 
