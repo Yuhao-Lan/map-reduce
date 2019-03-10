@@ -60,29 +60,29 @@ class MasterClient {
     }
   }
 
-   std::string StartReducer(const std::string& str_filename) {
-    // Data we are sending to the server.
-    Filename filename;
-    filename.set_filename(str_filename);
+  //  std::string StartReducer(const std::string& str_filename) {
+  //   // Data we are sending to the server.
+  //   Filename filename;
+  //   filename.set_filename(str_filename);
 
-    // Container for the data we expect from the server.
-    Filename return_filename;
+  //   // Container for the data we expect from the server.
+  //   Filename return_filename;
 
-    // Context for the client. It could be used to convey extra information to
-    // the server and/or tweak certain RPC behaviors.
-    ClientContext context;
+  //   // Context for the client. It could be used to convey extra information to
+  //   // the server and/or tweak certain RPC behaviors.
+  //   ClientContext context;
 
-    // The actual RPC.
-    Status status = stub_->StartReducer(&context, filename, &return_filename);
+  //   // The actual RPC.
+  //   Status status = stub_->StartReducer(&context, filename, &return_filename);
 
-    // Act upon its status.
-    if (status.ok()) {
-      return return_filename.filename();
-    } else {
-      std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-      return "RPC failed";
-    }
-  }
+  //   // Act upon its status.
+  //   if (status.ok()) {
+  //     return return_filename.filename();
+  //   } else {
+  //     std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+  //     return "RPC failed";
+  //   }
+  // }
 
  private:
   std::unique_ptr<Worker::Stub> stub_;
