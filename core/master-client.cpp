@@ -6,6 +6,11 @@
 
 #include "rpc_generated/master-worker.grpc.pb.h"
 //#include "split.h"
+#include<stdio.h> 
+#include<string.h> 
+#include<pthread.h> 
+#include<stdlib.h> 
+#include<unistd.h> 
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -61,7 +66,12 @@ int main(int argc, char** argv) {
 
   // wait all N pthreds to finish, and start reducers
   MasterClient cli(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename("this_is_the_file_for_map_reduce.txt");
+  std::string input_filename("this_is_from_5.txt");
+  std::string output_filename = cli.StartMapper(input_filename);
+  std::cout << "Worker received: " << output_filename << std::endl;
+
+  MasterClient cli(grpc::CreateChannel("myVMDeployed4:50051", grpc::InsecureChannelCredentials()));
+  std::string input_filename("this_is_from_4.txt");
   std::string output_filename = cli.StartMapper(input_filename);
   std::cout << "Worker received: " << output_filename << std::endl;
 
