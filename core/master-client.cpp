@@ -108,24 +108,24 @@ void* startmapper(void *arg) {
     // return NULL; 
 } 
 
-void* startreducer(void *arg) { 
-    //pthread_mutex_lock(&lock); 
+// void* startreducer(void *arg) { 
+//     //pthread_mutex_lock(&lock); 
   
   
 
-    struct thread_data *my_data;
-    my_data = (struct thread_data *) arg;
+//     struct thread_data *my_data;
+//     my_data = (struct thread_data *) arg;
 
-    MasterClient cli(grpc::CreateChannel(my_data->machineip, grpc::InsecureChannelCredentials()));
-    std::string input_filename(my_data->filename);
-    std::string output_filename = cli.StartReducer(input_filename);
-    std::cout << "Worker received: " << output_filename << std::endl;
+//     MasterClient cli(grpc::CreateChannel(my_data->machineip, grpc::InsecureChannelCredentials()));
+//     std::string input_filename(my_data->filename);
+//     std::string output_filename = cli.StartReducer(input_filename);
+//     std::cout << "Worker received: " << output_filename << std::endl;
 
   
-    //pthread_mutex_unlock(&lock);
-    pthread_exit(NULL);
-    // return NULL; 
-} 
+//     //pthread_mutex_unlock(&lock);
+//     pthread_exit(NULL);
+//     // return NULL; 
+// } 
 
 
 int main(int argc, char** argv) {
