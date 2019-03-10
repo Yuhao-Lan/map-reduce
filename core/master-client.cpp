@@ -65,7 +65,7 @@ class MasterClient {
 };
 
 
-void* trythis(void *arg) { 
+void* startmapper(void *arg) { 
     //pthread_mutex_lock(&lock); 
   
   
@@ -103,26 +103,26 @@ int main(int argc, char** argv) {
   struct thread_data td[3];
 
   td[0].machineip = "myVMDeployed3:50051";
-  td[0].filename = "from_3.txt";
+  td[0].filename = "split.1.txt";
   td[1].machineip = "myVMDeployed4:50051";
-  td[1].filename = "from_4.txt";
+  td[1].filename = "split.2.txt";
   td[2].machineip = "myVMDeployed5:50051";
-  td[2].filename = "from_5.txt";
+  td[2].filename = "split.3.txt";
 
 
     
   while(i < 3) { 
-      error = pthread_create(&(tid[i]), NULL, &trythis, (void*) &td[i]); 
+      error = pthread_create(&(tid[i]), NULL, &startmapper, (void*) &td[i]); 
       if (error != 0) 
           printf("\nThread can't be created :[%s]", strerror(error)); 
       i++; 
   } 
-    pthread_join(tid[0], NULL); 
-    pthread_join(tid[1], NULL); 
-    pthread_join(tid[2], NULL); 
+  pthread_join(tid[0], NULL); 
+  pthread_join(tid[1], NULL); 
+  pthread_join(tid[2], NULL); 
+
+
   
-
-
   // MasterClient cli1(grpc::CreateChannel("myVMDeployed5:50051", grpc::InsecureChannelCredentials()));
   // std::string input_filename1("this_is_from_5.txt");
   // std::string output_filename1 = cli1.StartMapper(input_filename1);
