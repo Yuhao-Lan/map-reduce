@@ -160,24 +160,24 @@ int main(int argc, char** argv) {
   struct thread_data td1[3];
   struct thread_data td2[3];
 
-  // td1[0].machineip = "myVMDeployed3:50051";
-  // td1[0].filename = "split.1.txt";
-  // td1[1].machineip = "myVMDeployed4:50051";
-  // td1[1].filename = "split.2.txt";
-  // td1[2].machineip = "myVMDeployed5:50051";
-  // td1[2].filename = "split.3.txt";
+  td1[0].machineip = "myVMDeployed3:50051";
+  td1[0].filename = "split.1.txt";
+  td1[1].machineip = "myVMDeployed4:50051";
+  td1[1].filename = "split.2.txt";
+  td1[2].machineip = "myVMDeployed5:50051";
+  td1[2].filename = "split.3.txt";
 
 
     
-  // while(i < 3) { 
-  //     error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
-  //     if (error != 0) 
-  //         printf("\nThread can't be created :[%s]", strerror(error)); 
-  //     i++; 
-  // } 
-  // pthread_join(tid1[0], NULL); 
-  // pthread_join(tid1[1], NULL); 
-  // pthread_join(tid1[2], NULL); 
+  while(i < 3) { 
+      error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
+      if (error != 0) 
+          printf("\nThread can't be created :[%s]", strerror(error)); 
+      i++; 
+  } 
+  pthread_join(tid1[0], NULL); 
+  pthread_join(tid1[1], NULL); 
+  pthread_join(tid1[2], NULL); 
 
   td2[0].machineip = "myVMDeployed3:50051";
   td2[0].filename = "split.1.txt_aftermapper";
