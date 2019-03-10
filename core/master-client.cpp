@@ -25,7 +25,7 @@ pthread_t tid[3];
 struct thread_data {
 
    char *machineip;
-   char *filename;
+   string filename;
 
 };
 
