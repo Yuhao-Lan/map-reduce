@@ -84,6 +84,24 @@ void* startmapper(void *arg) {
     // return NULL; 
 } 
 
+void* startreducer(void *arg) { 
+    //pthread_mutex_lock(&lock); 
+  
+  
+
+    struct thread_data *my_data;
+    my_data = (struct thread_data *) arg;
+
+    MasterClient cli(grpc::CreateChannel(my_data->machineip, grpc::InsecureChannelCredentials()));
+    std::string input_filename(my_data->filename);
+    std::string output_filename = cli.StartReducer(input_filename);
+    std::cout << "Worker received: " << output_filename << std::endl;
+
+  
+    //pthread_mutex_unlock(&lock);
+    pthread_exit(NULL);
+    // return NULL; 
+} 
 
 
 int main(int argc, char** argv) {
@@ -120,6 +138,21 @@ int main(int argc, char** argv) {
   pthread_join(tid[0], NULL); 
   pthread_join(tid[1], NULL); 
   pthread_join(tid[2], NULL); 
+
+  td[0].machineip = "myVMDeployed3:50051";
+  td[0].filename = "split.1.txt_aftermapper";
+  td[1].machineip = "myVMDeployed4:50051";
+  td[1].filename = "split.2.txt_aftermapper";
+  td[2].machineip = "myVMDeployed5:50051";
+  td[2].filename = "split.3.txt_aftermapper";
+
+  while(i < 3) { 
+      error = pthread_create(&(tid[i]), NULL, &startmapper, (void*) &td[i]); 
+      if (error != 0) 
+          printf("\nThread can't be created :[%s]", strerror(error)); 
+      i++; 
+  } 
+
 
 
   

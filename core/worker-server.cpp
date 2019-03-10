@@ -23,7 +23,7 @@ class WorkerServiceImpl final : public Worker::Service {
         //download 
 
         //exec 
-        std::string command = "cat " + request->filename() + " | python mapper.py";
+        std::string command = "cat " + request->filename() + " | python mapper.py > " + request->filename() + "_aftermapper";
         LOG(INFO) << "A mapper is running command: " <<  command;
         system(command.c_str());
 
@@ -38,6 +38,12 @@ class WorkerServiceImpl final : public Worker::Service {
         // download all the mappers' output files
         // exec sort, [partition]
         // exec("cat filename | python reduce.py > output.txt");
+
+
+        std::string command = "cat " + request->filename() + " | sort | python reducer.py > " + request->filename() + "| sort -k2nr";
+        LOG(INFO) << "A mapper is running command: " <<  command;
+        system(command.c_str());
+
         // upload(output.txt);
         response->set_filename("Hello " + request->filenames());
         LOG(INFO) << "The reducer is done with output file: ";
