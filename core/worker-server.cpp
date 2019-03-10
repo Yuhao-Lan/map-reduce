@@ -3,8 +3,8 @@
 #include <string>
 #include <grpc++/grpc++.h>
 #include <string>
-// #include <glog/logging.h>
-// #include <glog/raw_logging.h>
+#include <glog/logging.h>
+#include <glog/raw_logging.h>
 #include "rpc_generated/master-worker.grpc.pb.h"
 
 using grpc::Server;
@@ -14,32 +14,29 @@ using grpc::Status;
 using masterworker::Filenames;
 using masterworker::Filename;
 using masterworker::Worker;
-using namespace std;
 
 // Logic and data behind the server's behavior.
 class WorkerServiceImpl final : public Worker::Service {
 
   Status StartMapper(ServerContext* context, 
     const Filename* request, Filename* response) override {
-        cout << "A mapper is running with input file: " <<  request->filename();
-
+        LOG(INFO) << "A mapper is running with input file: " <<  request->filename();
         //download 
-
         //exec 
         //upload
         response->set_filename("Hello " + request->filename());
-        cout << "The mapper is done with output file: ";
+        LOG(INFO) << "The mapper is done with output file: ";
         return Status::OK;
   }
   Status StartReducer(ServerContext* context, 
     const Filenames* request, Filename* response) override {
-        cout << "A reducer is running with input files: " <<  request->filenames();
+        LOG(INFO) << "A reducer is running with input files: " <<  request->filenames();
         // download all the mappers' output files
         // exec sort, [partition]
         // exec("cat filename | python reduce.py > output.txt");
         // upload(output.txt);
         response->set_filename("Hello " + request->filenames());
-        cout << "The reducer is done with output file: ";
+        LOG(INFO) << "The reducer is done with output file: ";
         return Status::OK;
   }
 };
