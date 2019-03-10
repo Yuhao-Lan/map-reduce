@@ -126,8 +126,6 @@ void* startmapper(void *arg) {
 void* startreducer(void *arg) { 
     //pthread_mutex_lock(&lock); 
   
-  
-
     struct thread_data *my_data;
     my_data = (struct thread_data *) arg;
 

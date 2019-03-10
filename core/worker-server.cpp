@@ -25,6 +25,7 @@ class WorkerServiceImpl final : public Worker::Service {
         //exec 
         std::string command = "cat " + request->filename() + " | python mapper.py > " + request->filename() + "_aftermapper";
         LOG(INFO) << "A mapper is running command: " <<  command;
+        
         system(command.c_str());
 
         //upload
