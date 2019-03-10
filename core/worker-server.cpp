@@ -23,7 +23,7 @@ class WorkerServiceImpl final : public Worker::Service {
         //download 
 
         //exec 
-        char* command = "cat " + equest->filename() + " | python mapper.py";
+        char* command = "cat " + request->filename() + " | python mapper.py";
         LOG(INFO) << "A mapper is running command: " <<  command;
         system(command);
 
