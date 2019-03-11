@@ -131,9 +131,8 @@ int main(int argc, char** argv) {
         cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
         //assign the blob file name to filename
         td1[i-1].filename = blob;
-
     }
-
+    download_file("splitblob.5","split/splitblob.5");
     // create M clients, where M is the number of worker nodes
     // TODO mutli-threading
     // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
@@ -157,7 +156,7 @@ int main(int argc, char** argv) {
     }
 
     for(int i = 0; i < NUM_CHUNK; i++) { 
-      
+
         error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
         if (error != 0) 
             printf("\nThread can't be created :[%s]", strerror(error)); 

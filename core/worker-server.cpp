@@ -46,6 +46,8 @@ class WorkerServiceImpl final : public Worker::Service {
             LOG(INFO) << "The blobpath is : " <<  blobpath;
             //download 
             download_file(download_file_name,blobpath);
+            
+            LOG(INFO) << "downloading successfully";
             //exec 
             std::string command = "cat " + download_file_name + " | python mapper.py > " + download_file_name + "_aftermapper";
             string file_after_mapper = download_file_name + "_aftermapper";
