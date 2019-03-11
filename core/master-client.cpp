@@ -11,7 +11,8 @@
 #include<pthread.h> 
 #include<stdlib.h> 
 #include<unistd.h> 
-  
+#include <glog/logging.h>
+#include <glog/raw_logging.h>
 
 using grpc::Channel;
 using grpc::ClientContext;
