@@ -93,6 +93,8 @@ class WorkerServiceImpl final : public Worker::Service {
         
         //upload
         response->set_filename(map_output_file);
+        string blob = "mapresults/" + map_output_file;
+        upload_to_blob(map_output_file, blob);
         LOG(INFO) << "The mapper is done with output file: " << map_output_file;
         close(out_fd);
         close(in_fd);
@@ -109,7 +111,6 @@ class WorkerServiceImpl final : public Worker::Service {
         // download all the mappers' output files
         // exec sort, [partition]
         // exec("cat filename | python reduce.py > output.txt");
-
 
         std::string command = "cat " + request->filenames() + " | sort | python reducer.py | sort -k2nr > " + request->filenames() + "_final";
         LOG(INFO) << "A reducer is running command: " <<  command;
