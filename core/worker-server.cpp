@@ -84,8 +84,8 @@ class WorkerServiceImpl final : public Worker::Service {
         {
           dup2(in_fd, 0);
           dup2(out_fd, 1);
-          const char* prog1[] = { "python", "mapper.py", 0};
-          execvp(prog1[0], prog1);
+          execlp("python", "python", "mapper.py", (char*) NULL);
+
         } else{
           int status;
           waitpid(pid, &status,0);
