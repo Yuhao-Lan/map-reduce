@@ -77,16 +77,16 @@ class WorkerServiceImpl final : public Worker::Service {
         pid_t pid = fork();
         if(pid == -1)
         {
-          LOG(WARNING) << hostname << ".Mapper(" <<  request->filename() << ") failed";
+          LOG(WARNING) <<  ".Mapper(" <<  request->filename() << ") failed";
           return Status::CANCELLED;
         }
         else if (pid == 0)
         {
           dup2(in_fd, 0);
           dup2(out_fd, 1);
-          const char * cmd = "~./mapper.py";
-          //char * const cmd[] = {"./mapper.py", nullptr};
-          execvp(cmd, NULL);
+          const char * loc = "";
+          char * const cmd[] = {"./mapper.py", nullptr};
+          execvp(cmd, loc);
         }else{
           int status;
           waitpid(pid, &status,0);
