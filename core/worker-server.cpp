@@ -29,7 +29,7 @@ class WorkerServiceImpl final : public Worker::Service {
         if(pid == -1) {
 
           LOG(WARNING) <<"mapper(" <<  request->filename() << ") failed";
-          return Status::FAIL;
+          return Status::CANCELLED;
 
         }
         else if (pid == 0) {
@@ -38,17 +38,17 @@ class WorkerServiceImpl final : public Worker::Service {
             
             string delimiter = "/";
 
-            string download_file = blobpath.substr(blobpath.find(delimiter)+1);
+            string download_file_name = blobpath.substr(blobpath.find(delimiter)+1);
 
 
   
-            LOG(INFO) << "A mapper is downloading : " <<  download_file;
+            LOG(INFO) << "A mapper is downloading : " <<  download_file_name;
             LOG(INFO) << "The blobpath is : " <<  blobpath;
             //download 
-            download_file(download_file,blobpath);
+            download_file(download_file_name,blobpath);
             //exec 
-            std::string command = "cat " + download_file + " | python mapper.py > " + download_file + "_aftermapper";
-            string file_after_mapper = download_file + "_aftermapper";
+            std::string command = "cat " + download_file_name + " | python mapper.py > " + download_file_name + "_aftermapper";
+            string file_after_mapper = download_file_name + "_aftermapper";
             LOG(INFO) << "A mapper is running command: " <<  command;
             system(command.c_str());
             string blobname = "mapper/" + file_after_mapper;
