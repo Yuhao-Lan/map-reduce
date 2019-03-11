@@ -23,46 +23,81 @@ class WorkerServiceImpl final : public Worker::Service {
   Status StartMapper(ServerContext* context, 
     const Filename* request, Filename* response) override {
 
-        LOG(INFO) << "A mapper is running with input file: " <<  request->filename();
+        // LOG(INFO) << "A mapper is running with input file: " <<  request->filename();
+        // pid_t pid = fork();
+
+        // if(pid == -1) {
+
+        //   LOG(WARNING) <<"mapper(" <<  request->filename() << ") failed";
+        //   return Status::CANCELLED;
+
+        // }
+        // else if (pid == 0) {
+
+        //     string blobpath = request->filename(); 
+            
+        //     string delimiter = "/";
+
+        //     string download_file_name = blobpath.substr(blobpath.find(delimiter)+1);
+
+
+        //     LOG(INFO) << "A mapper is downloading : " <<  download_file_name;
+        //     LOG(INFO) << "The blobpath is : " <<  blobpath;
+        //     //download 
+        //     download_file(download_file_name,blobpath);
+        //     LOG(INFO) << "downloading successfully";
+        //     //exec 
+        //     std::string command = "cat " + download_file_name + " | python mapper.py > " + download_file_name + "_aftermapper";
+        //     string file_after_mapper = download_file_name + "_aftermapper";
+        //     LOG(INFO) << "A mapper is running command: " <<  command;
+        //     system(command.c_str());
+        //     string blobname = "mapper/" + file_after_mapper;
+        //     //upload
+        //     upload_to_blob(file_after_mapper,blobname);
+
+        // } else {
+
+        //   int status;
+        //   waitpid(pid, &status,0);
+
+        // }
+
+        LOG(INFO) <<  ".Mapper(" <<  request->filename() << ")";
+        //download 
+        string blobpath = request->filename();
+        string delimiter = "/";
+        string download_file_name = blobpath.substr(blobpath.find(delimiter)+1);
+        download_file(download_file_name, blobpath);
+        //exec
+        //cat ../input_files/big.txt | ./mapper.py | sort | ./reducer.py
+        string map_output_file = download_file_name + ".map";
+        int out_fd = open(map_output_file.c_str(), O_RDWR|O_CREAT, 0666);
+        int in_fd = open(download_file_name.c_str(), O_RDONLY);
+
         pid_t pid = fork();
-
-        if(pid == -1) {
-
-          LOG(WARNING) <<"mapper(" <<  request->filename() << ") failed";
+        if(pid == -1)
+        {
+          LOG(WARNING) << hostname << ".Mapper(" <<  request->filename() << ") failed";
           return Status::CANCELLED;
-
         }
-        else if (pid == 0) {
-
-            string blobpath = request->filename(); 
-            
-            string delimiter = "/";
-
-            string download_file_name = blobpath.substr(blobpath.find(delimiter)+1);
-
-
-  
-            LOG(INFO) << "A mapper is downloading : " <<  download_file_name;
-            LOG(INFO) << "The blobpath is : " <<  blobpath;
-            //download 
-            download_file(download_file_name,blobpath);
-            
-            LOG(INFO) << "downloading successfully";
-            //exec 
-            std::string command = "cat " + download_file_name + " | python mapper.py > " + download_file_name + "_aftermapper";
-            string file_after_mapper = download_file_name + "_aftermapper";
-            LOG(INFO) << "A mapper is running command: " <<  command;
-            system(command.c_str());
-            string blobname = "mapper/" + file_after_mapper;
-            //upload
-            upload_to_blob(file_after_mapper,blobname);
-
-        } else {
-
+        else if (pid == 0)
+        {
+          dup2(in_fd, 0);
+          dup2(out_fd, 1);
+          const char * cmd = "~./mapper.py";
+          //char * const cmd[] = {"./mapper.py", nullptr};
+          execvp(cmd, NULL);
+        }else{
           int status;
           waitpid(pid, &status,0);
-
         }
+        
+        //upload
+        response->set_filename(map_output_file);
+        LOG(INFO) << "The mapper is done with output file: " << map_output_file;
+        close(out_fd);
+        close(in_fd);
+        return Status::OK;
 
         response->set_filename("Finished:  " + request->filename());
         LOG(INFO) << "The mapper is done with output file: ";
