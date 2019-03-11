@@ -5,6 +5,8 @@
 #include <glog/logging.h>
 #include <glog/raw_logging.h>
 #include "rpc_generated/master-worker.grpc.pb.h"
+#include <sys/types.h> 
+#include <sys/wait.h>
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -27,7 +29,7 @@ class WorkerServiceImpl final : public Worker::Service {
 
           LOG(WARNING) << hostname << ".Mapper(" <<  request->filename() << ") failed";
           return Status::FAIL;
-          
+
         }
         else if (pid == 0) {
 
