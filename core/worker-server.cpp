@@ -7,7 +7,9 @@
 #include "rpc_generated/master-worker.grpc.pb.h"
 #include <sys/types.h> 
 #include <sys/wait.h>
-
+#include <vector> 
+typedef basic_stringstream<char>  stringstream;
+typedef basic_string<char> string;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
