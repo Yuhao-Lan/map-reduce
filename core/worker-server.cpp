@@ -84,11 +84,10 @@ class WorkerServiceImpl final : public Worker::Service {
         {
           dup2(in_fd, 0);
           dup2(out_fd, 1);
-          const char * loc = "/home/yuhaolan/";
-          char * const cmd[] = {"mapper.py", nullptr};
+          const char * loc = "~//home/yuhaolan/";
+          char * const cmd[] = {"./mapper.py", nullptr};
           execvp(cmd, loc);
-
-        } else {
+        } else{
           int status;
           waitpid(pid, &status,0);
         }
