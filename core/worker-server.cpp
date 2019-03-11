@@ -8,8 +8,6 @@
 #include <sys/types.h> 
 #include <sys/wait.h>
 #include <vector> 
-typedef basic_stringstream<char>  stringstream;
-typedef basic_string<char> string;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -17,7 +15,7 @@ using grpc::Status;
 using masterworker::Filenames;
 using masterworker::Filename;
 using masterworker::Worker;
-
+using namespace std;
 // Logic and data behind the server's behavior.
 class WorkerServiceImpl final : public Worker::Service {
 
