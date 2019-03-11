@@ -21,7 +21,6 @@ using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
 
-#define NUM_CHUNK 10
 
 pthread_t tid1[NUM_CHUNK]; 
 
@@ -97,11 +96,11 @@ void* startmapper(void *arg) {
     // return NULL; 
 } 
 
-void* startreducer(void *arg) { 
+void startreducer() { 
 
   MasterClient cli(grpc::CreateChannel("myVMDeployed3:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename("split.1.txt_aftermapper");
-  std::string output_filename = cli.StartReducer(input_filename);
+  std::string input_filenames("mapresults/");
+  std::string output_filename = cli.StartReducer(input_filenames);
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
@@ -170,7 +169,7 @@ int main(int argc, char** argv) {
 
     }
 
-    //startreducer();
+    startreducer();
 
     return 0;
 

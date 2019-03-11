@@ -95,7 +95,7 @@ class WorkerServiceImpl final : public Worker::Service {
         response->set_filename(map_output_file);
         string blob = "mapresults/" + map_output_file;
         upload_to_blob(map_output_file, blob);
-        LOG(INFO) <<  "uploading" <<  map_output_file << " to " << blob;
+        LOG(INFO) <<  "  uploading  " <<  map_output_file << " to " << blob;
 
         LOG(INFO) << "The mapper is done with output file: " << map_output_file;
         close(out_fd);
@@ -113,12 +113,23 @@ class WorkerServiceImpl final : public Worker::Service {
         // download all the mappers' output files
         // exec sort, [partition]
         // exec("cat filename | python reduce.py > output.txt");
+        //splitblob.1.map
 
-        std::string command = "cat " + request->filenames() + " | sort | python reducer.py | sort -k2nr > " + request->filenames() + "_final";
+        string folder = request->filenames();
+        string filename = "";
+ 
+        for(int i = 1; i <= NUM_CHUNK; i++) {
+          
+          filename = folder + "splitblob." + i + ".map";
+          download_file(filename, filename);
+
+        }
+
+        std::string command = "cat *map | sort | python reducer.py | sort -k2nr > reducer_results";
         LOG(INFO) << "A reducer is running command: " <<  command;
         system(command.c_str());
 
-        // upload(output.txt);
+        upload_to_blob("reducer_results", "reducer_results/reducer_results.txt");
         response->set_filename("Finished:  " + request->filenames());
         LOG(INFO) << "The reducer is done with output file: ";
         return Status::OK;

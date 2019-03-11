@@ -16,6 +16,8 @@
 #include <fstream>
 using namespace std;
 
+#define NUM_CHUNK 10
+
 
 int upload_to_blob(string inputfile, string blobname);
 int download_file(string download_file_name, string blobname);
