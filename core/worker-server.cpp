@@ -35,20 +35,16 @@ class WorkerServiceImpl final : public Worker::Service {
         }
         else if (pid == 0) {
 
-           string blobpath = request->filename(); 
-            // Vector of string to save tokens 
-            vector <string> tokens; 
-            // stringstream class check1 
-            stringstream check1(blobpath); 
-            string intermediate; 
-            // Tokenizing w.r.t. space ' ' 
-            while(getline(check1, intermediate, '/')) { 
-                tokens.push_back(intermediate); 
-            } 
-              
+            string blobpath = request->filename(); 
+            
+            string delimiter = "/";
+
+            string download_file = blobpath.substr(blobpath.find(delimiter)+1);
+
+
+  
             LOG(INFO) << "A mapper is downloading : " <<  download_file;
             LOG(INFO) << "The blobpath is : " <<  blobpath;
-            string download_file = tokens[1];
             //download 
             download_file(download_file,blobpath);
             //exec 
