@@ -120,7 +120,7 @@ class WorkerServiceImpl final : public Worker::Service {
  
         for(int i = 1; i <= NUM_CHUNK; i++) {
 
-          filename = folder + "splitblob." + str(i) + ".map";
+          filename = folder + "splitblob." + to_string(i) + ".map";
           download_file(filename, filename);
 
         }
