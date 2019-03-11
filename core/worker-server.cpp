@@ -86,7 +86,7 @@ class WorkerServiceImpl final : public Worker::Service {
           dup2(out_fd, 1);
           const char * loc = "~//home/yuhaolan/";
           char * const cmd[] = {"./mapper.py", nullptr};
-          execvp(cmd, loc);
+          execvp(loc, cmd);
         } else{
           int status;
           waitpid(pid, &status,0);
