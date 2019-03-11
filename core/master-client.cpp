@@ -106,14 +106,17 @@ void* startreducer(void *arg) {
 
 int main(int argc, char** argv) {
   // upload input file to blob
+  if(argc != 2)
+    cout << "Usage: ./master <input_file_name>" << endl;
+  else {
 
-  string inputfile = argv[1];
-  string blobfilename = inputfile + "_blob";
-  upload_to_blob(inputfile, blobfilename);
-  int error; 
-  struct thread_data td1[NUM_CHUNK];
-  // split input file into N chunks
-  split_file(inputfile,"temp", NUM_CHUNK);
+    string inputfile = argv[1];
+    string blobfilename = inputfile + "_blob";
+    upload_to_blob(inputfile, blobfilename);
+    int error; 
+    struct thread_data td1[NUM_CHUNK];
+    // split input file into N chunks
+    split_file(inputfile,"temp", NUM_CHUNK);
 
    for(int i = 1; i <= NUM_CHUNK; i++) {
 
@@ -129,50 +132,47 @@ int main(int argc, char** argv) {
 
     }
 
+    // create M clients, where M is the number of worker nodes
+    // TODO mutli-threading
+    // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
+    // wait all N pthreds to finish, and start reducers
 
+    for(int i = 0; i < NUM_CHUNK; i++) {
 
+      if(i == 0 || i % 3 == 0) {
 
-  // create M clients, where M is the number of worker nodes
-  // TODO mutli-threading
+         td1[i].machineip = "myVMDeployed3:50051";
 
-  // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
+      } else if(i % 3 == 2) {
 
-  // wait all N pthreds to finish, and start reducers
+         td1[i].machineip = "myVMDeployed4:50051";
 
-  for(int i = 0; i < NUM_CHUNK; i++) {
+      } else if(i % 3 == 1) {
 
-    if(i == 0 || i % 3 == 0) {
+         td1[i].machineip = "myVMDeployed5:50051";
+      }
 
-       td1[i].machineip = "myVMDeployed3:50051";
-
-    } else if(i % 3 == 2) {
-
-       td1[i].machineip = "myVMDeployed4:50051";
-
-    } else if(i % 3 == 1) {
-
-       td1[i].machineip = "myVMDeployed5:50051";
     }
 
+    while(i < NUM_CHUNK) { 
+        error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
+        if (error != 0) 
+            printf("\nThread can't be created :[%s]", strerror(error)); 
+        i++; 
+    } 
+   
+
+    for(int i = 0; i < num_chunk; i++) {
+
+      pthread_join(tid1[i], NULL); 
+
+    }
+
+    //startreducer();
+
+    return 0;
+
   }
 
 
-
-  while(i < NUM_CHUNK) { 
-      error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
-      if (error != 0) 
-          printf("\nThread can't be created :[%s]", strerror(error)); 
-      i++; 
-  } 
- 
-
-  for(int i = 0; i < num_chunk; i++) {
-
-    pthread_join(tid1[i], NULL); 
-
-  }
-
-  //startreducer();
-
-  return 0;
 }
