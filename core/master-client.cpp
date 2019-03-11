@@ -20,7 +20,8 @@ using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
 
-#define NUM_CHUNK 10;
+#define NUM_CHUNK 10
+
 pthread_t tid1[NUM_CHUNK]; 
 
 
