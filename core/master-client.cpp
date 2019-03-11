@@ -156,11 +156,12 @@ int main(int argc, char** argv) {
 
     }
 
-    while(i < NUM_CHUNK) { 
+    for(int i = 0; i < NUM_CHUNK; i++) { 
+      
         error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
         if (error != 0) 
             printf("\nThread can't be created :[%s]", strerror(error)); 
-        i++; 
+       
     } 
    
 
