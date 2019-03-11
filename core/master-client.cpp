@@ -19,8 +19,9 @@ using grpc::Status;
 using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
-pthread_t tid1[3]; 
-pthread_t tid2[3]; 
+
+define NUM_CHUNK 10;
+pthread_t tid1[NUM_CHUNK]; 
 
 
 struct thread_data {
@@ -75,30 +76,6 @@ class MasterClient {
     }
   }
    
-  //  std::string StartReducer(const std::string& str_filename) {
-  //   // Data we are sending to the server.
-  //   Filename filename;
-  //   filename.set_filename(str_filename);
-
-  //   // Container for the data we expect from the server.
-  //   Filename return_filename;
-
-  //   // Context for the client. It could be used to convey extra information to
-  //   // the server and/or tweak certain RPC behaviors.
-  //   ClientContext context;
-
-  //   // The actual RPC.
-  //   Status status = stub_->StartReducer(&context, filename, &return_filename);
-
-  //   // Act upon its status.
-  //   if (status.ok()) {
-  //     return return_filename.filename();
-  //   } else {
-  //     std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-  //     return "RPC failed";
-  //   }
-  // }
-
  private:
   std::unique_ptr<Worker::Stub> stub_;
 };
@@ -106,9 +83,6 @@ class MasterClient {
 
 void* startmapper(void *arg) { 
     //pthread_mutex_lock(&lock); 
-  
-  
-
     struct thread_data *my_data;
     my_data = (struct thread_data *) arg;
 
@@ -116,35 +90,47 @@ void* startmapper(void *arg) {
     std::string input_filename(my_data->filename);
     std::string output_filename = cli.StartMapper(input_filename);
     std::cout << "Worker received: " << output_filename << std::endl;
-
-  
     //pthread_mutex_unlock(&lock);
     pthread_exit(NULL);
     // return NULL; 
 } 
 
 void* startreducer(void *arg) { 
-    //pthread_mutex_lock(&lock); 
-  
-    struct thread_data *my_data;
-    my_data = (struct thread_data *) arg;
 
-    MasterClient cli(grpc::CreateChannel(my_data->machineip, grpc::InsecureChannelCredentials()));
-    std::string input_filename(my_data->filename);
-    std::string output_filename = cli.StartReducer(input_filename);
-    std::cout << "Worker received: " << output_filename << std::endl;
-
-  
-    //pthread_mutex_unlock(&lock);
-    pthread_exit(NULL);
-    // return NULL; 
+  MasterClient cli(grpc::CreateChannel("myVMDeployed3:50051", grpc::InsecureChannelCredentials()));
+  std::string input_filename("split.1.txt_aftermapper");
+  std::string output_filename = cli.StartReducer(input_filename);
+  std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
 
 int main(int argc, char** argv) {
   // upload input file to blob
 
+  string inputfile = argv[1];
+  string blobfilename = inputfile + "_blob";
+  upload_to_blob(inputfile, blobfilename);
+  int error; 
+  struct thread_data td1[NUM_CHUNK];
   // split input file into N chunks
+  split_file(inputfile,"temp", NUM_CHUNK);
+
+   for(int i = 1; i <= NUM_CHUNK; i++) {
+
+        string inputfile = "./temp." + to_string(i);
+        string blob = "split/splitblob." + to_string(i);
+        cout << inputfile << endl;
+        cout << blob << endl;
+        upload_to_blob(inputfile, blob);
+        LOG(INFO) << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+        cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+        //assign the blob file name to filename
+        td1[i-1].filename = blob;
+
+    }
+
+
+
 
   // create M clients, where M is the number of worker nodes
   // TODO mutli-threading
@@ -153,40 +139,40 @@ int main(int argc, char** argv) {
 
   // wait all N pthreds to finish, and start reducers
 
-  int i = 0; 
-  int error; 
-  struct thread_data td1[3];
-  struct thread_data td2[3];
+  for(int i = 0; i < NUM_CHUNK; i++) {
 
-  td1[0].machineip = "myVMDeployed3:50051";
-  td1[0].filename = "split.1.txt";
-  td1[1].machineip = "myVMDeployed4:50051";
-  td1[1].filename = "split.2.txt";
-  td1[2].machineip = "myVMDeployed5:50051";
-  td1[2].filename = "split.3.txt";
+    if(i == 0 || i % 3 == 0) {
+
+       td1[i].machineip = "myVMDeployed3:50051";
+
+    } else if(i % 3 == 2) {
+
+       td1[i].machineip = "myVMDeployed4:50051";
+
+    } else if(i % 3 == 1) {
+
+       td1[i].machineip = "myVMDeployed5:50051";
+    }
+
+  }
 
 
-    
-  while(i < 3) { 
+
+  while(i < NUM_CHUNK) { 
       error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
       if (error != 0) 
           printf("\nThread can't be created :[%s]", strerror(error)); 
       i++; 
   } 
-  pthread_join(tid1[0], NULL); 
-  pthread_join(tid1[1], NULL); 
-  pthread_join(tid1[2], NULL); 
+ 
 
-  MasterClient cli(grpc::CreateChannel("myVMDeployed3:50051", grpc::InsecureChannelCredentials()));
-  std::string input_filename("split.1.txt_aftermapper");
-  std::string output_filename = cli.StartReducer(input_filename);
-  std::cout << "Worker-reducer received: " << output_filename << std::endl;
-  
+  for(int i = 0; i < num_chunk; i++) {
 
+    pthread_join(tid1[i], NULL); 
 
+  }
 
-
-  
+  //startreducer();
 
   return 0;
 }
