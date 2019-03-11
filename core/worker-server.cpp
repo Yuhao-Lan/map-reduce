@@ -8,6 +8,7 @@
 #include <sys/types.h> 
 #include <sys/wait.h>
 #include <vector> 
+#include "split.h"
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -27,7 +28,7 @@ class WorkerServiceImpl final : public Worker::Service {
 
         if(pid == -1) {
 
-          LOG(WARNING) << hostname << ".Mapper(" <<  request->filename() << ") failed";
+          LOG(WARNING) <<"mapper(" <<  request->filename() << ") failed";
           return Status::FAIL;
 
         }
