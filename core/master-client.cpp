@@ -20,7 +20,7 @@ using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
 
-define NUM_CHUNK 10;
+#define NUM_CHUNK 10;
 pthread_t tid1[NUM_CHUNK]; 
 
 
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
     } 
    
 
-    for(int i = 0; i < num_chunk; i++) {
+    for(int i = 0; i < NUM_CHUNK; i++) {
 
       pthread_join(tid1[i], NULL); 
 
