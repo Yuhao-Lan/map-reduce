@@ -37,9 +37,9 @@ std::vector<thread_data> redomapping;
 string MACHINEONE = "myVMDeployed3:50051";
 string MACHINETWO = "myVMDeployed4:50051";
 string MACHINETHREE = "myVMDeployed5:50051";
-boolean MACHINEONEOK = true;
-boolean MACHINETWOOK = true;
-boolean MACHINETHREEOK = true;
+bool MACHINEONEOK = true;
+bool MACHINETWOOK = true;
+bool MACHINETHREEOK = true;
 
 
 
@@ -62,7 +62,7 @@ class MasterClient {
 
     // Context for the client. It could be used to convey extra information to
     // the server and/or tweak certain RPC behaviors.
-    // ClientContext context;
+    ClientContext context;
     // //set the timer
     // std::chrono::steady_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(100);
     // context.set_deadline(deadline);
@@ -217,12 +217,10 @@ int main(int argc, char** argv) {
 
     int REMAP_SIZE = redomapping.size();
 
+
     if(REMAP_SIZE != 0) {
 
-      pthread_t tid2[REMAP_SIZE]; 
-
-
-      count << "Rescheduling the failed worker tasks..." << endl;
+      cout << "Rescheduling the failed worker tasks..." << endl;
 
       int count = 0;
 
@@ -232,26 +230,26 @@ int main(int argc, char** argv) {
 
         if(MACHINEONEOK) {
 
-          count << "Rescheduling to Machine: " << MACHINEONE << endl;
+          cout << "Rescheduling to Machine: " << MACHINEONE << endl;
 
           td2[i].machineip = MACHINEONE;
 
         } else if(MACHINETWOOK) {
 
-          count << "Rescheduling to Machine: " << MACHINETWO << endl;
+          cout << "Rescheduling to Machine: " << MACHINETWO << endl;
 
           td2[i].machineip = MACHINETWO;
 
         } else {
 
-          count << "Rescheduling to Machine: " << MACHINETHREE << endl;
+          cout << "Rescheduling to Machine: " << MACHINETHREE << endl;
 
           td2[i].machineip = MACHINETHREE;
 
         }
         td2[i].filename = redomapping[i].filename;
       }
-    }
+    
 
      for(int i = 0; i < REMAP_SIZE; i++) { 
 
@@ -267,6 +265,8 @@ int main(int argc, char** argv) {
       pthread_join(tid2[i], NULL); 
 
     }
+
+  }
 
 
 
