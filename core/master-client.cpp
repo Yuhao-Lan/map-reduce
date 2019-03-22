@@ -217,8 +217,11 @@ int main(int argc, char** argv) {
 
     int REMAP_SIZE = redomapping.size();
 
-
+    //chekc the remapping
     if(REMAP_SIZE != 0) {
+
+      pthread_t tid2[REMAP_SIZE]; 
+
 
       cout << "Rescheduling the failed worker tasks..." << endl;
 
@@ -248,6 +251,7 @@ int main(int argc, char** argv) {
 
         }
         td2[i].filename = redomapping[i].filename;
+
       }
     
 
