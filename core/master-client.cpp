@@ -51,7 +51,6 @@ class MasterClient {
     // the server and/or tweak certain RPC behaviors.
     ClientContext context;
     //set the timer
-    ClientContext context;
     time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(100);
     context.set_deadline(deadline);
 
