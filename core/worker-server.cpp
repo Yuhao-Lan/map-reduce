@@ -39,8 +39,6 @@ class WorkerServiceImpl final : public Worker::Service {
         //     string delimiter = "/";
 
         //     string download_file_name = blobpath.substr(blobpath.find(delimiter)+1);
-
-
         //     LOG(INFO) << "A mapper is downloading : " <<  download_file_name;
         //     LOG(INFO) << "The blobpath is : " <<  blobpath;
         //     //download 

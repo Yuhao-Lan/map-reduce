@@ -50,6 +50,10 @@ class MasterClient {
     // Context for the client. It could be used to convey extra information to
     // the server and/or tweak certain RPC behaviors.
     ClientContext context;
+    //set the timer
+    ClientContext context;
+    time_point deadline = std::chrono::system_clock::now() + std::chrono::milliseconds(100);
+    context.set_deadline(deadline);
 
     // The actual RPC.
     Status status = stub_->StartMapper(&context, filename, &return_filename);
@@ -58,6 +62,7 @@ class MasterClient {
     if (status.ok()) {
       return return_filename.filename();
     } else {
+      //status is not ok
       std::cout << status.error_code() << ": " << status.error_message() << std::endl;
       return "RPC failed";
     }
@@ -90,7 +95,13 @@ void* startmapper(void *arg) {
     MasterClient cli(grpc::CreateChannel(my_data->machineip, grpc::InsecureChannelCredentials()));
     std::string input_filename(my_data->filename);
     std::string output_filename = cli.StartMapper(input_filename);
+    //RPC failed or splitblob.499.map 
+    //TODO add the timer
+
+
     std::cout << "Worker received: " << output_filename << std::endl;
+    int count = 0;
+
     //pthread_mutex_unlock(&lock);
     pthread_exit(NULL);
     // return NULL; 
@@ -157,6 +168,7 @@ int main(int argc, char** argv) {
     for(int i = 0; i < NUM_CHUNK; i++) { 
 
         error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
+
         if (error != 0) 
             printf("\nThread can't be created :[%s]", strerror(error)); 
        
