@@ -37,6 +37,7 @@ std::vector<thread_data> redomapping;
 string MACHINEONE = "myVMDeployed3:50051";
 string MACHINETWO = "myVMDeployed4:50051";
 string MACHINETHREE = "myVMDeployed5:50051";
+string REDUCERMAHINE;
 bool MACHINEONEOK = true;
 bool MACHINETWOOK = true;
 bool MACHINETHREEOK = true;
@@ -140,12 +141,13 @@ void* startmapper(void *arg) {
 void startreducer() { 
 
   if(MACHINEONEOK)
-    MasterClient cli(grpc::CreateChannel(MACHINEONE, grpc::InsecureChannelCredentials()));
+    REDUCERMAHINE = MACHINEONE;
   else if(MACHINETWOOK)
-    MasterClient cli(grpc::CreateChannel(MACHINETWO, grpc::InsecureChannelCredentials()));
+    REDUCERMAHINE = MACHINETWO;
   else
-    MasterClient cli(grpc::CreateChannel(MACHINETHREE, grpc::InsecureChannelCredentials()));
+    REDUCERMAHINE = MACHINETHREE;
 
+  MasterClient cli(grpc::CreateChannel(REDUCERMAHINE, grpc::InsecureChannelCredentials()));
   std::string input_filenames("mapresults/");
   std::string output_filename = cli.StartReducer(input_filenames);
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
@@ -216,9 +218,14 @@ int main(int argc, char** argv) {
       pthread_join(tid1[i], NULL); 
 
     }
+
+
+
     //check which part needs redo:
+
     int REMAP_SIZE = redomapping.size();
-    //chekc the remapping
+
+    //chekc the remaping
     if(REMAP_SIZE != 0) {
 
       pthread_t tid2[REMAP_SIZE]; 
