@@ -139,7 +139,13 @@ void* startmapper(void *arg) {
 
 void startreducer() { 
 
-  MasterClient cli(grpc::CreateChannel(MACHINEONE, grpc::InsecureChannelCredentials()));
+  if(MACHINEONEOK)
+    MasterClient cli(grpc::CreateChannel(MACHINEONE, grpc::InsecureChannelCredentials()));
+  else if(MACHINETWOOK)
+    MasterClient cli(grpc::CreateChannel(MACHINETWO, grpc::InsecureChannelCredentials()));
+  else
+    MasterClient cli(grpc::CreateChannel(MACHINETHREE, grpc::InsecureChannelCredentials()));
+
   std::string input_filenames("mapresults/");
   std::string output_filename = cli.StartReducer(input_filenames);
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
@@ -210,13 +216,8 @@ int main(int argc, char** argv) {
       pthread_join(tid1[i], NULL); 
 
     }
-
-
-
     //check which part needs redo:
-
     int REMAP_SIZE = redomapping.size();
-
     //chekc the remapping
     if(REMAP_SIZE != 0) {
 
