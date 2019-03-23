@@ -33,7 +33,8 @@ struct thread_data {
 
 };
 
-std::vector<thread_data> redomapping;
+std::queue<thread_data> redomapping;
+std::queue<thread_data> redoreducing;
 string MACHINEONE = "myVMDeployed3:50051";
 string MACHINETWO = "myVMDeployed4:50051";
 string MACHINETHREE = "myVMDeployed5:50051";
@@ -127,7 +128,7 @@ void* startmapper(void *arg) {
 
       redomapping.push_back({my_data->machineip, input_filename});
 
-    }
+    } 
 
 
     std::cout << "Worker received: " << output_filename << std::endl;
@@ -150,6 +151,23 @@ void startreducer() {
   MasterClient cli(grpc::CreateChannel(REDUCERMAHINE, grpc::InsecureChannelCredentials()));
   std::string input_filenames("mapresults/");
   std::string output_filename = cli.StartReducer(input_filenames);
+
+  if(output_filename == "RPC failed") {
+
+      if(my_data->machineip == MACHINEONE)
+        MACHINEONEOK = false;
+
+      if(my_data->machineip == MACHINETWO)
+        MACHINETWOOK = false;
+
+      if(my_data->machineip == MACHINETHREE)
+        MACHINETHREEOK = false;
+
+      redoreducing.push_back({my_data->machineip, input_filenames});
+
+  } 
+
+
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
@@ -219,8 +237,6 @@ int main(int argc, char** argv) {
 
     }
 
-
-
     //check which part needs redo:
 
     int REMAP_SIZE = redomapping.size();
@@ -228,61 +244,66 @@ int main(int argc, char** argv) {
     //chekc the remaping
     if(REMAP_SIZE != 0) {
 
-      pthread_t tid2[REMAP_SIZE]; 
+      do {
 
+          REMAP_SIZE = redomapping.size();
 
-      cout << "Rescheduling the failed worker tasks..." << endl;
+          pthread_t tid2[REMAP_SIZE]; 
 
-      int count = 0;
+          cout << "Rescheduling the failed worker tasks..." << endl;
 
-      struct thread_data td2[REMAP_SIZE];
+          int index = 0;
 
-      for(int i = 0; i < redomapping.size(); i++) {
+          struct thread_data td2[REMAP_SIZE];
 
-        if(MACHINEONEOK) {
+          while(!redomapping.empty()) {
 
-          cout << "Rescheduling to Machine: " << MACHINEONE << endl;
+            thread_data current = redomapping.pop();
 
-          td2[i].machineip = MACHINEONE;
+            if(MACHINEONEOK) {
 
-        } else if(MACHINETWOOK) {
+              cout << "Rescheduling to Machine: " << MACHINEONE << endl;
 
-          cout << "Rescheduling to Machine: " << MACHINETWO << endl;
+              td2[index].machineip = MACHINEONE;
 
-          td2[i].machineip = MACHINETWO;
+            } else if(MACHINETWOOK) {
 
-        } else {
+              cout << "Rescheduling to Machine: " << MACHINETWO << endl;
 
-          cout << "Rescheduling to Machine: " << MACHINETHREE << endl;
+              td2[index].machineip = MACHINETWO;
 
-          td2[i].machineip = MACHINETHREE;
+            } else {
 
-        }
-        td2[i].filename = redomapping[i].filename;
+              cout << "Rescheduling to Machine: " << MACHINETHREE << endl;
 
-      }
-    
+              td2[index].machineip = MACHINETHREE;
 
-     for(int i = 0; i < REMAP_SIZE; i++) { 
+            }
+            //target message
+            td2[index].filename = current.filename;
+            index++;
 
-        error = pthread_create(&(tid2[i]), NULL, &startmapper, (void*) &td2[i]); 
+          }
+         for(int i = 0; i < REMAP_SIZE; i++) { 
 
-        if (error != 0) 
-            printf("\nThread can't be created :[%s]", strerror(error)); 
+            error = pthread_create(&(tid2[i]), NULL, &startmapper, (void*) &td2[i]); 
+            if (error != 0) 
+                printf("\nThread can't be created :[%s]", strerror(error)); 
+        } 
        
-    } 
-   
-    for(int i = 0; i < REMAP_SIZE; i++) {
+        for(int i = 0; i < REMAP_SIZE; i++) {
+          pthread_join(tid2[i], NULL); 
+        }
 
-      pthread_join(tid2[i], NULL); 
-
-    }
+      } while(!redomapping.empty())
 
   }
 
-
-
     startreducer();
+    //check reducing whether need to redo
+    if(!redoreducing.empty())
+      startreducer();
+
 
     return 0;
 
