@@ -302,8 +302,10 @@ int main(int argc, char** argv) {
 
     startreducer();
     //check reducing whether need to redo
-    if(!redoreducing.empty())
+    if(!redoreducing.empty()) {
+      cout << "Rescheduling Reducing... " << endl;
       startreducer();
+    }
 
 
     return 0;
