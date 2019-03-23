@@ -126,7 +126,7 @@ void* startmapper(void *arg) {
       if(my_data->machineip == MACHINETHREE)
         MACHINETHREEOK = false;
 
-      redomapping.push_back({my_data->machineip, input_filename});
+      redomapping.push({my_data->machineip, input_filename});
 
     } 
 
@@ -154,16 +154,16 @@ void startreducer() {
 
   if(output_filename == "RPC failed") {
 
-      if(my_data->machineip == MACHINEONE)
+      if(REDUCERMAHINE == MACHINEONE)
         MACHINEONEOK = false;
 
-      if(my_data->machineip == MACHINETWO)
+      if(REDUCERMAHINE == MACHINETWO)
         MACHINETWOOK = false;
 
-      if(my_data->machineip == MACHINETHREE)
+      if(REDUCERMAHINE == MACHINETHREE)
         MACHINETHREEOK = false;
 
-      redoreducing.push_back({my_data->machineip, input_filenames});
+      redoreducing.push({REDUCERMAHINE, input_filenames});
 
   } 
 
@@ -258,7 +258,8 @@ int main(int argc, char** argv) {
 
           while(!redomapping.empty()) {
 
-            thread_data current = redomapping.pop();
+            thread_data current = redomapping.front();
+            redomapping.pop();
 
             if(MACHINEONEOK) {
 
