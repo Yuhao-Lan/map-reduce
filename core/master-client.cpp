@@ -296,7 +296,7 @@ int main(int argc, char** argv) {
           pthread_join(tid2[i], NULL); 
         }
 
-      } while(!redomapping.empty())
+      } while(!redomapping.empty());
 
   }
 
