@@ -21,7 +21,6 @@ using masterworker::Filenames;
 using masterworker::Worker;
 using namespace std;
 ofstream log_file;
-log_file.open("log_file.txt", fstream::app);
 
 
 
@@ -132,8 +131,13 @@ void* startmapper(void *arg) {
     } 
     //keep track of inputfile successfully
 
+    log_file.open("log_file.txt", fstream::app);
 
-    log_file << output_filename + "\n";
+    if (log_file.is_open())
+      log_file << output_filename + "\n";
+    else
+      cout << "log_file failed to open" << endl;
+
     std::cout << "Worker received: " << output_filename << std::endl;
     int count = 0;
 
@@ -195,7 +199,14 @@ void split_and_map_process(string inputfile) {
       td1[i-1].filename = blob;
   }
 
-  log_file << inputfile + " split successfully\n";
+   log_file.open("log_file.txt", fstream::app);
+
+    if (log_file.is_open())
+      log_file << inputfile + " split successfully\n";
+    else
+      cout << "log_file failed to open" << endl;
+
+  
 
  for(int i = 0; i < NUM_CHUNK; i++) {
 
@@ -231,6 +242,8 @@ void split_and_map_process(string inputfile) {
       pthread_join(tid1[i], NULL); 
 
     }
+
+    log_file.close();
 
 
 }
