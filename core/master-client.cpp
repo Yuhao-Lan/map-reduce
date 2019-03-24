@@ -383,6 +383,7 @@ int main(int argc, char** argv) {
   // upload input file to blob
   if(argc != 3)
     cout << "Usage: ./master <input_file_name> <Is this first time to run master: 1 or 0>" << endl;
+
   else {
 
    
@@ -405,83 +406,82 @@ int main(int argc, char** argv) {
 
       }
 
-    } else {
+    // } else {
 
-      cout << "replicating master data..." << endl;
-      cout << "continue running master unfinished jobs..." << endl;
-      std::this_thread::sleep_for (std::chrono::seconds(2));
+    //   cout << "replicating master data..." << endl;
+    //   cout << "continue running master unfinished jobs..." << endl;
+    //   std::this_thread::sleep_for (std::chrono::seconds(2));
 
-      std::ifstream infile("log_file.txt");
+    //   std::ifstream infile("log_file.txt");
 
-      std::string line;
-      unordered_set<int> numbers;
-      std::vector<string> replicating_filenames;
+    //   std::string line;
+    //   unordered_set<int> numbers;
+    //   std::vector<string> replicating_filenames;
 
-      std::getline(infile, line);
+    //   std::getline(infile, line);
 
-      if(line.compare("split successfully") != 0) {
+    //   if(line.compare("split successfully") != 0) {
 
-        cout << "rodo: splitting..." << endl;
+    //     cout << "rodo: splitting..." << endl;
 
-        string inputfile = argv[1];
-         split_and_map_process(inputfile);
-         start_remapping();
-         startreducer();
-        //check reducing whether need to redo
-        if(!redoreducing.empty()) {
-          cout << "Rescheduling Reducing... " << endl;
-          startreducer();
-        }
+    //     string inputfile = argv[1];
+    //      split_and_map_process(inputfile);
+    //      start_remapping();
+    //      startreducer();
+    //     //check reducing whether need to redo
+    //     if(!redoreducing.empty()) {
+    //       cout << "Rescheduling Reducing... " << endl;
+    //       startreducer();
+    //     }
 
 
-      } else {
+    //   } else {
 
-        cout << "checked: split file successfully..." << endl;
-         while (std::getline(infile, line,'.')) {
+    //     cout << "checked: split file successfully..." << endl;
+    //      while (std::getline(infile, line,'.')) {
 
-          if(line.compare("RPC failed")== 0)
-            continue;
+    //       if(line.compare("RPC failed")== 0)
+    //         continue;
 
-          if(line.compare("splitblob") == 0)
-            continue;
-          if(line.compare("map") == 0)
-            continue;
+    //       if(line.compare("splitblob") == 0)
+    //         continue;
+    //       if(line.compare("map") == 0)
+    //         continue;
 
-          numbers.insert(atoi(line.c_str()));
+    //       numbers.insert(atoi(line.c_str()));
 
-        }
+    //     }
 
-        string input_filename;
-        //find the non-mapped file
-        for(int i = 1; i <= NUM_CHUNK; i++) {
+    //     string input_filename;
+    //     //find the non-mapped file
+    //     for(int i = 1; i <= NUM_CHUNK; i++) {
 
-          if (numbers.find(i) == numbers.end()) {
+    //       if (numbers.find(i) == numbers.end()) {
 
-            input_filename = "split/splitblob." + to_string(i);
+    //         input_filename = "split/splitblob." + to_string(i);
 
-            if(i % 3 == 0)
-              replicating.push({MACHINEONE, input_filename});
-            else if(i % 3 == 1)
-              replicating.push({MACHINETWO, input_filename});
-            else
-              replicating.push({MACHINETHREE, input_filename});
-          }
-      }
+    //         if(i % 3 == 0)
+    //           replicating.push({MACHINEONE, input_filename});
+    //         else if(i % 3 == 1)
+    //           replicating.push({MACHINETWO, input_filename});
+    //         else
+    //           replicating.push({MACHINETHREE, input_filename});
+    //       }
+    //   }
 
-      rescheduling();
-      start_remapping();
-      startreducer();
-      //check reducing whether need to redo
-      if(!redoreducing.empty()) {
-        cout << "Rescheduling Reducing... " << endl;
-        startreducer();
+    //   rescheduling();
+    //   start_remapping();
+    //   startreducer();
+    //   //check reducing whether need to redo
+    //   if(!redoreducing.empty()) {
+    //     cout << "Rescheduling Reducing... " << endl;
+    //     startreducer();
 
-      }
+    //   }
 
+    // }
 
     }
-
-  }
    
   }
   return 0;
