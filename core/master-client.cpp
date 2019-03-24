@@ -25,6 +25,8 @@ ofstream log_file;
 
 
 
+
+
 pthread_t tid1[NUM_CHUNK]; 
 
 struct thread_data {
@@ -350,6 +352,19 @@ int main(int argc, char** argv) {
       }
 
     } else {
+
+      cout << "replicating master data..." << endl;
+
+      std::ifstream infile("log_file.txt");
+
+      std::string line;
+      while (std::getline(infile, line)) {
+          cout << line << endl;
+      }
+
+      //check whether split successfully
+
+      //find the non-mapped file
 
 
 
