@@ -217,7 +217,7 @@ void split_process(string inputfile) {
 
     for(int i = 0; i < NUM_CHUNK; i++) { 
 
-        int error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
+        error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
 
         if (error != 0) 
             printf("\nThread can't be created :[%s]", strerror(error)); 
