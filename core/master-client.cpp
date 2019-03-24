@@ -242,6 +242,7 @@ void start_remapping() {
     //check which part needs redo:
 
     int REMAP_SIZE = redomapping.size();
+    int error;
 
     //chekc the remaping
     if(REMAP_SIZE != 0) {
