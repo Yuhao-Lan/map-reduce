@@ -20,7 +20,7 @@ using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
 using namespace std;
-ofstream log;
+ofstream log_file;
 
 
 
@@ -132,7 +132,7 @@ void* startmapper(void *arg) {
     //keep track of inputfile successfully
 
 
-    log << output_filename + "\n";
+    log_file << output_filename + "\n";
     std::cout << "Worker received: " << output_filename << std::endl;
     int count = 0;
 
@@ -320,11 +320,11 @@ int main(int argc, char** argv) {
   
     if(flag_log.compare("1")) {
 
-      log.open ("log.txt");
+      log_file.open ("log_file.txt");
       split_process(inputfile, td1);
-      log << inputfile + "\n";
+      log_file << inputfile + "\n";
 
-      start_map_process(td1, log);
+      start_map_process(td1, log_file);
 
       start_remapping();
 
