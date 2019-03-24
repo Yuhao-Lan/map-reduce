@@ -21,6 +21,8 @@ using masterworker::Filenames;
 using masterworker::Worker;
 using namespace std;
 ofstream log_file;
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
 
 
 
@@ -38,6 +40,7 @@ struct thread_data {
 
 std::queue<thread_data> redomapping;
 std::queue<thread_data> redoreducing;
+std::queue<thread_data> replicating;
 string MACHINEONE = "myVMDeployed3:50051";
 string MACHINETWO = "myVMDeployed4:50051";
 string MACHINETHREE = "myVMDeployed5:50051";
@@ -205,7 +208,7 @@ void split_and_map_process(string inputfile) {
    log_file.open("log_file.txt", fstream::app);
 
     if (log_file.is_open())
-      log_file << inputfile + " split successfully\n";
+      log_file << "split successfully\n";
     else
       cout << "log_file failed to open" << endl;
     log_file.close();
@@ -324,6 +327,58 @@ void start_remapping() {
 }
 
 
+void rescheduling() {
+  //check which part needs redo:
+
+    int REMAP_SIZE = replicating.size();
+    int error;
+
+    //chekc the remaping
+    if(REMAP_SIZE != 0) {
+
+      do {
+
+          REMAP_SIZE = replicating.size();
+
+          pthread_t tid2[REMAP_SIZE]; 
+
+          cout << "Rescheduling the failed worker tasks..." << endl;
+
+          int index = 0;
+
+          struct thread_data td2[REMAP_SIZE];
+
+          while(!replicating.empty()) {
+
+            thread_data current = replicating.front();
+            replicating.pop();
+
+            td2[index].machineip = current.machineip;
+       
+            td2[index].filename = current.filename;
+            index++;
+
+          }
+         for(int i = 0; i < REMAP_SIZE; i++) { 
+
+            error = pthread_create(&(tid2[i]), NULL, &startmapper, (void*) &td2[i]); 
+            if (error != 0) 
+                printf("\nThread can't be created :[%s]", strerror(error)); 
+        } 
+       
+        for(int i = 0; i < REMAP_SIZE; i++) {
+          pthread_join(tid2[i], NULL); 
+        }
+
+      } while(!replicating.empty());
+
+  }
+
+
+
+}
+
+
 
 int main(int argc, char** argv) {
   // upload input file to blob
@@ -354,57 +409,69 @@ int main(int argc, char** argv) {
     } else {
 
       cout << "replicating master data..." << endl;
+      cout << "continue running master unfinished jobs..." << endl;
+      std::this_thread::sleep_for (std::chrono::seconds(2));
 
       std::ifstream infile("log_file.txt");
 
       std::string line;
       unordered_set<int> numbers;
-      
-      while (std::getline(infile, line,'.')) {
+      std::vector<string> replicating_filenames;
 
-        if(line.compare("splitblob") == 0)
-          continue;
-        if(line.compare("map") == 0)
-          continue;
+      std::getline(infile, line);
 
-        cout << line << endl;
+      if(line.compare("split successfully") != 0) {
 
-        numbers.insert(atoi(line.c_str()));
+        cout << "rodo: splitting..." << endl;
 
-      }
+        string inputfile = argv[1];
+         split_and_map_process(inputfile);
+         start_remapping();
+         startreducer();
+        //check reducing whether need to redo
+        if(!redoreducing.empty()) {
+          cout << "Rescheduling Reducing... " << endl;
+          startreducer();
+        }
 
-      for(int i = 1; i <= NUM_CHUNK; i++) {
-        
-        if (numbers.find(i) == numbers.end()) {
 
-          cout << "split/splitblob." + to_string(i) << endl;
+      } else {
+
+        cout << "checked: split file successfully..." << endl;
+         while (std::getline(infile, line,'.')) {
+
+          if(line.compare("splitblob") == 0)
+            continue;
+          if(line.compare("map") == 0)
+            continue;
+
+          numbers.insert(atoi(line.c_str()));
 
         }
 
+        string input_filename;
+        //find the non-mapped file
+        for(int i = 1; i <= NUM_CHUNK; i++) {
+
+          if (numbers.find(i) == numbers.end()) {
+
+            input_filename = "split/splitblob." + to_string(i);
+
+            if(i % 3 == 0)
+              replicating.push({MACHINEONE, input_filename});
+            else if(i % 3 == 1)
+              replicating.push({MACHINETWO, input_filename});
+            else
+              replicating.push({MACHINETHREE, input_filename});
+          }
       }
 
-      //check whether split successfully
-
-      //find the non-mapped file
-
+      rescheduling();
 
     }
 
-   
-
-   
-   
-  
-
-
-    
-
-
-    
-    
-    return 0;
-
   }
-
-
+   
+  }
+  return 0;
 }
