@@ -317,7 +317,6 @@ int main(int argc, char** argv) {
     string inputfile = argv[1];
     string flag_log = argv[2];
 
-
   
     if(flag_log.compare("1") == 0) {
 
@@ -332,6 +331,8 @@ int main(int argc, char** argv) {
       if(!redoreducing.empty()) {
         cout << "Rescheduling Reducing... " << endl;
         startreducer();
+
+         log_file.close();
       }
 
     } else {
@@ -345,6 +346,7 @@ int main(int argc, char** argv) {
    
    
   
+
 
     
 
