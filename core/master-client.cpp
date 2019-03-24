@@ -173,7 +173,7 @@ void startreducer() {
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
-void split_process(string inputfile, thread_data td1) {
+void split_process(string inputfile, thread_data[] td1) {
 
   string blobfilename = inputfile + "_blob";
   upload_to_blob(inputfile, blobfilename);
@@ -207,7 +207,7 @@ void split_process(string inputfile, thread_data td1) {
 }
 
 
-void start_map_process(thread_data td1) {
+void start_map_process(thread_data[] td1) {
 
   //download_file("splitblob.5","split/splitblob.5");
   // create M clients, where M is the number of worker nodes
