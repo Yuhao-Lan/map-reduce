@@ -16,7 +16,7 @@
 #include <fstream>
 using namespace std;
 
-#define NUM_CHUNK 512
+#define NUM_CHUNK 64
 
 
 int upload_to_blob(string inputfile, string blobname);
