@@ -358,16 +358,33 @@ int main(int argc, char** argv) {
       std::ifstream infile("log_file.txt");
 
       std::string line;
-      vector<int> numbers;
-
+      unordered_set<int> numbers;
+      
       while (std::getline(infile, line,'.')) {
-          cout << line << endl;
+
+        if(line.compare("splitblob") == 0)
+          continue;
+        if(line.compare("map") == 0)
+          continue;
+
+        cout << line << endl;
+
+        numbers.insert(atoi(line.c_str()));
+
+      }
+
+      for(int i = 1; i <= NUM_CHUNK; i++) {
+        if (s.find(i) == s.end()) {
+
+          cout << "split/splitblob." + to_string(i) << endl;
+
+        }
+
       }
 
       //check whether split successfully
 
       //find the non-mapped file
-
 
 
     }
