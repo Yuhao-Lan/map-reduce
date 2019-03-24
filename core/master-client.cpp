@@ -319,7 +319,7 @@ int main(int argc, char** argv) {
 
 
   
-    if(flag_log.compare("1")) {
+    if(flag_log.compare("1") == 0) {
 
       log_file.open ("log_file.txt");
       split_and_map_process(inputfile);
