@@ -20,6 +20,7 @@ using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
 using namespace std;
+ofstream log;
 
 
 
@@ -131,7 +132,7 @@ void* startmapper(void *arg) {
     //keep track of inputfile successfully
 
 
-
+    log << output_filename + "\n";
     std::cout << "Worker received: " << output_filename << std::endl;
     int count = 0;
 
@@ -172,80 +173,53 @@ void startreducer() {
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
+void split_process(string inputfile, thread_data td1) {
 
-int main(int argc, char** argv) {
-  // upload input file to blob
-  if(argc != 2)
-    cout << "Usage: ./master <input_file_name>" << endl;
-  else {
+  string blobfilename = inputfile + "_blob";
+  upload_to_blob(inputfile, blobfilename);
+  int error; 
+  // split input file into N chunks
+  split_file(inputfile,"temp", NUM_CHUNK);
+  //uopload split files
+  for(int i = 1; i <= NUM_CHUNK; i++) {
+      string inputfile = "./temp." + to_string(i);
+      string blob = "split/splitblob." + to_string(i);
+      cout << inputfile << endl;
+      cout << blob << endl;
+      upload_to_blob(inputfile, blob);
+      LOG(INFO) << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+      cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+      //assign the blob file name to filename
+      td1[i-1].filename = blob;
+  }
 
-    string line;
-    ofstream log;
-    log.open("log.txt", fstream::app);
+ for(int i = 0; i < NUM_CHUNK; i++) {
 
-    string inputfile = argv[1];
-    string blobfilename = inputfile + "_blob";
-    upload_to_blob(inputfile, blobfilename);
-    int error; 
-    struct thread_data td1[NUM_CHUNK];
-
-    getline (log,line);
-    cout << "current line: " << line << endl;
-
-    if(line.compare(inputfile) != 0) {
-
-       // split input file into N chunks
-      split_file(inputfile,"temp", NUM_CHUNK);
-
-      //uopload split files
-     for(int i = 1; i <= NUM_CHUNK; i++) {
-
-          string inputfile = "./temp." + to_string(i);
-          string blob = "split/splitblob." + to_string(i);
-          cout << inputfile << endl;
-          cout << blob << endl;
-          upload_to_blob(inputfile, blob);
-          LOG(INFO) << "upload " << inputfile << " to " << blob << " successfully... " << endl;
-          cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
-          //assign the blob file name to filename
-          td1[i-1].filename = blob;
-
-      }
-
-      log << inputfile + "\n";
-
-    } else {
-      cout << "===>master already finished the spliting file in the previous stage" << endl;
+    if(i == 0 || i % 3 == 0) {
+       td1[i].machineip = MACHINEONE;
+    } else if(i % 3 == 2) {
+       td1[i].machineip = MACHINETWO;
+    } else if(i % 3 == 1) {
+       td1[i].machineip = MACHINETHREE;
     }
-   
-  
+  }
 
-    //download_file("splitblob.5","split/splitblob.5");
-    // create M clients, where M is the number of worker nodes
-    // TODO mutli-threading
-    // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
-    // wait all N pthreds to finish, and start reducers
+}
 
-    for(int i = 0; i < NUM_CHUNK; i++) {
 
-      if(i == 0 || i % 3 == 0) {
+void start_map_process(thread_data td1) {
 
-         td1[i].machineip = MACHINEONE;
+  //download_file("splitblob.5","split/splitblob.5");
+  // create M clients, where M is the number of worker nodes
+  // TODO mutli-threading
+  // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
+  // wait all N pthreds to finish, and start reducers
 
-      } else if(i % 3 == 2) {
 
-         td1[i].machineip = MACHINETWO;
-
-      } else if(i % 3 == 1) {
-
-         td1[i].machineip = MACHINETHREE;
-      }
-
-    }
 
     for(int i = 0; i < NUM_CHUNK; i++) { 
 
-        error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
+        int error = pthread_create(&(tid1[i]), NULL, &startmapper, (void*) &td1[i]); 
 
         if (error != 0) 
             printf("\nThread can't be created :[%s]", strerror(error)); 
@@ -258,6 +232,11 @@ int main(int argc, char** argv) {
       pthread_join(tid1[i], NULL); 
 
     }
+
+}
+
+
+void start_remapping() {
 
     //check which part needs redo:
 
@@ -322,14 +301,58 @@ int main(int argc, char** argv) {
 
   }
 
-    startreducer();
-    //check reducing whether need to redo
-    if(!redoreducing.empty()) {
-      cout << "Rescheduling Reducing... " << endl;
+}
+
+
+
+int main(int argc, char** argv) {
+  // upload input file to blob
+  if(argc != 3)
+    cout << "Usage: ./master <input_file_name> <Is this first time to run master: 1 or 0>" << endl;
+  else {
+
+   
+    string inputfile = argv[1];
+    string flag_log = argv[2];
+
+    thread_data td1[NUM_CHUNK];
+
+  
+    if(flag_log.compare("1")) {
+
+      log.open ("log.txt");
+      split_process(inputfile, td1);
+      log << inputfile + "\n";
+
+      start_map_process(td1, log);
+
+      start_remapping();
+
       startreducer();
+
+      //check reducing whether need to redo
+      if(!redoreducing.empty()) {
+        cout << "Rescheduling Reducing... " << endl;
+        startreducer();
+      }
+
+    } else {
+
+
+
     }
 
+   
 
+   
+   
+  
+
+    
+
+
+    
+    
     return 0;
 
   }
