@@ -173,7 +173,7 @@ void startreducer() {
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
-void split_process(string inputfile) {
+void split_and_map_process(string inputfile) {
 
   struct thread_data td1[NUM_CHUNK];
   string blobfilename = inputfile + "_blob";
