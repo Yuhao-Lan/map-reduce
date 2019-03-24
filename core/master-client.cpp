@@ -354,7 +354,6 @@ void rescheduling() {
             replicating.pop();
 
             td2[index].machineip = current.machineip;
-       
             td2[index].filename = current.filename;
             index++;
 
@@ -439,6 +438,9 @@ int main(int argc, char** argv) {
 
         cout << "checked: split file successfully..." << endl;
          while (std::getline(infile, line,'.')) {
+
+          if(line.compare("RPC failed")== 0)
+            continue;
 
           if(line.compare("splitblob") == 0)
             continue;
