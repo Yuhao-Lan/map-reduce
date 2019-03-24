@@ -21,6 +21,7 @@ using masterworker::Filenames;
 using masterworker::Worker;
 using namespace std;
 ofstream log_file;
+log_file.open("log_file.txt", fstream::app);
 
 
 
@@ -320,7 +321,6 @@ int main(int argc, char** argv) {
   
     if(flag_log.compare("1") == 0) {
 
-      log_file.open ("log_file.txt");
       split_and_map_process(inputfile);
 
       start_remapping();
@@ -332,7 +332,6 @@ int main(int argc, char** argv) {
         cout << "Rescheduling Reducing... " << endl;
         startreducer();
 
-         log_file.close();
       }
 
     } else {
