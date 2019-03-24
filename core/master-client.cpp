@@ -374,7 +374,8 @@ int main(int argc, char** argv) {
       }
 
       for(int i = 1; i <= NUM_CHUNK; i++) {
-        if (s.find(i) == s.end()) {
+        
+        if (numbers.find(i) == numbers.end()) {
 
           cout << "split/splitblob." + to_string(i) << endl;
 
