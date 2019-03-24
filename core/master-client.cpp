@@ -1,9 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
-
 #include <grpc++/grpc++.h>
-
 #include "rpc_generated/master-worker.grpc.pb.h"
 #include "split.h"
 #include<stdio.h> 
@@ -13,6 +11,7 @@
 #include<unistd.h> 
 #include <glog/logging.h>
 #include <glog/raw_logging.h>
+#include <fstream>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -20,11 +19,12 @@ using grpc::Status;
 using masterworker::Filename;
 using masterworker::Filenames;
 using masterworker::Worker;
+using namespace std;
+
+
 
 
 pthread_t tid1[NUM_CHUNK]; 
-
-
 
 struct thread_data {
 
@@ -42,8 +42,6 @@ string REDUCERMAHINE;
 bool MACHINEONEOK = true;
 bool MACHINETWOOK = true;
 bool MACHINETHREEOK = true;
-
-
 
 
 
@@ -128,7 +126,10 @@ void* startmapper(void *arg) {
 
       redomapping.push({my_data->machineip, input_filename});
 
+
     } 
+    //keep track of inputfile successfully
+
 
 
     std::cout << "Worker received: " << output_filename << std::endl;
@@ -178,27 +179,48 @@ int main(int argc, char** argv) {
     cout << "Usage: ./master <input_file_name>" << endl;
   else {
 
+    string line;
+    ofstream log;
+    log.open("log.txt", fstream::app);
+
     string inputfile = argv[1];
     string blobfilename = inputfile + "_blob";
     upload_to_blob(inputfile, blobfilename);
     int error; 
     struct thread_data td1[NUM_CHUNK];
-    // split input file into N chunks
-    split_file(inputfile,"temp", NUM_CHUNK);
 
-   for(int i = 1; i <= NUM_CHUNK; i++) {
+    getline (log,line);
+    cout << "current line: " << line << endl;
 
-        string inputfile = "./temp." + to_string(i);
-        string blob = "split/splitblob." + to_string(i);
-        cout << inputfile << endl;
-        cout << blob << endl;
-        upload_to_blob(inputfile, blob);
-        LOG(INFO) << "upload " << inputfile << " to " << blob << " successfully... " << endl;
-        cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
-        //assign the blob file name to filename
-        td1[i-1].filename = blob;
+    if(line.compare(inputfile) != 0) {
+
+       // split input file into N chunks
+      split_file(inputfile,"temp", NUM_CHUNK);
+
+      //uopload split files
+     for(int i = 1; i <= NUM_CHUNK; i++) {
+
+          string inputfile = "./temp." + to_string(i);
+          string blob = "split/splitblob." + to_string(i);
+          cout << inputfile << endl;
+          cout << blob << endl;
+          upload_to_blob(inputfile, blob);
+          LOG(INFO) << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+          cout << "upload " << inputfile << " to " << blob << " successfully... " << endl;
+          //assign the blob file name to filename
+          td1[i-1].filename = blob;
+
+      }
+
+      log << inputfile + "\n";
+
+    } else {
+      cout << "===>master already finished the spliting file in the previous stage" << endl;
     }
-    download_file("splitblob.5","split/splitblob.5");
+   
+  
+
+    //download_file("splitblob.5","split/splitblob.5");
     // create M clients, where M is the number of worker nodes
     // TODO mutli-threading
     // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
