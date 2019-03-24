@@ -173,8 +173,9 @@ void startreducer() {
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
-void split_process(string inputfile, thread_data[] td1) {
+void split_process(string inputfile) {
 
+  struct thread_data td1[NUM_CHUNK];
   string blobfilename = inputfile + "_blob";
   upload_to_blob(inputfile, blobfilename);
   int error; 
@@ -193,6 +194,8 @@ void split_process(string inputfile, thread_data[] td1) {
       td1[i-1].filename = blob;
   }
 
+  log_file << inputfile + " split successfully\n";
+
  for(int i = 0; i < NUM_CHUNK; i++) {
 
     if(i == 0 || i % 3 == 0) {
@@ -204,12 +207,7 @@ void split_process(string inputfile, thread_data[] td1) {
     }
   }
 
-}
-
-
-void start_map_process(thread_data[] td1) {
-
-  //download_file("splitblob.5","split/splitblob.5");
+   //download_file("splitblob.5","split/splitblob.5");
   // create M clients, where M is the number of worker nodes
   // TODO mutli-threading
   // start N pthreads, each thread selects a client based on round robin, and then calls cli.startmapper();
@@ -233,7 +231,10 @@ void start_map_process(thread_data[] td1) {
 
     }
 
+
 }
+
+
 
 
 void start_remapping() {
@@ -315,16 +316,12 @@ int main(int argc, char** argv) {
     string inputfile = argv[1];
     string flag_log = argv[2];
 
-    struct thread_data td1[NUM_CHUNK];
 
   
     if(flag_log.compare("1")) {
 
       log_file.open ("log_file.txt");
-      split_process(inputfile, td1);
-      log_file << inputfile + "\n";
-
-      start_map_process(td1);
+      split_and_map_process(inputfile);
 
       start_remapping();
 
