@@ -143,6 +143,8 @@ void* startmapper(void *arg) {
     else
       cout << "log_file failed to open" << endl;
 
+    upload_to_blob("log_file.txt","log/log_file.txt");
+
     log_file.close();
 
     cout << "Worker received: " << output_filename << std::endl;
@@ -211,6 +213,9 @@ void split_and_map_process(string inputfile) {
       log_file << "split successfully\n";
     else
       cout << "log_file failed to open" << endl;
+
+    upload_to_blob("log_file.txt","log/log_file.txt");
+
     log_file.close();
 
   
@@ -407,7 +412,7 @@ int main(int argc, char** argv) {
           }
 
     } else {
-
+            download_file("log_file.txt","log/log_file.txt");
             cout << "replicating master data..." << endl;
             cout << "continue running master unfinished jobs..." << endl;
             std::this_thread::sleep_for (std::chrono::seconds(2));
