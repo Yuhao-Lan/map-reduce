@@ -23,6 +23,9 @@ using namespace std;
 ofstream log_file;
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
+#include <conservator/ConservatorFrameworkFactory.h>
+#include <zookeeper/zookeeper.h>
+
 
 
 
@@ -143,6 +146,7 @@ void* startmapper(void *arg) {
     else
       cout << "log_file failed to open" << endl;
 
+    upload_to_blob("log_file.txt","log/log_file.txt");
     log_file.close();
 
     cout << "Worker received: " << output_filename << std::endl;
@@ -211,6 +215,8 @@ void split_and_map_process(string inputfile) {
       log_file << "split successfully\n";
     else
       cout << "log_file failed to open" << endl;
+
+    upload_to_blob("log_file.txt","log/log_file.txt");
     log_file.close();
 
   
@@ -377,23 +383,40 @@ void rescheduling() {
 
 }
 
+void leader_election(string inputfile) {
+  LOG(INFO) << "Main.leader_election ....";
+  // try to create parent directory /master and node
+  char cstr_hostname[HOSTNAME_MAX_LEN];
+  if(gethostname(cstr_hostname, HOSTNAME_MAX_LEN) != 0){
+    LOG(INFO) << "Error: Cannot get hostname";
+    return;
+  }
+  string hostname = string(cstr_hostname);
+  framework->create()->forPath("/master", (char *) "master-nodes");
+  string nodename = "/master/leader";
+  if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, hostname.c_str()) == ZOK){
+    LOG(INFO) << "Main." << hostname << ".Acting as leader ...";
+    is_leader = 1;
+    start_leader(inputfile);
+  }else{
+    LOG(INFO) << "Main." << hostname << ".Acting as follower ...";
+    is_leader = 0;
+    // watch leader
+    framework->checkExists()->withWatcher(watch_leader, &framework)->forPath("/master/leader");
+    return;
+  }
+}
 
+bool is_empty(std::ifstream& pFile) {
+    return pFile.peek() == std::ifstream::traits_type::eof();
+}
 
+void start_leader(string inputfile) {
 
+      download_file("log_file.txt","log/log_file.txt");
+      std::ifstream file("log_file.txt");
 
-int main(int argc, char** argv) {
-  // upload input file to blob
-  if(argc != 3)
-    cout << "Usage: ./master <input_file_name> <Is this first time to run master: 1 or 0>" << endl;
-
-  else {
-
-   
-    string inputfile = argv[1];
-    string flag_log = argv[2];
-
-  
-    if(flag_log.compare("1") == 0) {
+      if(is_empty(file)) {
 
           split_and_map_process(inputfile);
 
@@ -425,7 +448,6 @@ int main(int argc, char** argv) {
 
               cout << "rodo: splitting..." << endl;
 
-              string inputfile = argv[1];
                split_and_map_process(inputfile);
                start_remapping();
                startreducer();
@@ -469,7 +491,6 @@ int main(int argc, char** argv) {
                         replicating.push({MACHINETHREE, input_filename});
                     }
                 }
-
                 rescheduling();
                 start_remapping();
                 startreducer();
@@ -479,11 +500,30 @@ int main(int argc, char** argv) {
                   startreducer();
 
                 }
-
           }
-
     }
-   
+
+}
+
+
+
+
+int main(int argc, char** argv) {
+  // upload input file to blob
+  if(argc != 2) {
+    cout << "Usage: ./master <input_file_name>" << endl;
+    return 0;
   }
+
+    string inputfile = argv[1];
+
+    ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
+    framework = factory.newClient("cli-node:2181");
+    framework->start();
+    framework->create()->forPath("/master", (char *) "master-nodes");
+    leader_election(inputfile);
+    framework->close();
+
+  
   return 0;
 }
