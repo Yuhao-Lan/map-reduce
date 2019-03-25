@@ -536,7 +536,6 @@ int main(int argc, char** argv) {
     inputfile = argv[1];
 
     cout << inputfile << endl;
-
     ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
     framework = factory.newClient("cli-node:2181");
     framework->start();

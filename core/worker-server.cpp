@@ -135,6 +135,31 @@ class WorkerServiceImpl final : public Worker::Service {
 
 };
 
+#define HOSTNAME_MAX_LEN 128
+unique_ptr<ConservatorFramework> framework;
+void NotifyZookeeper() {
+      // check if the server is the leader. Leader is master1
+    char cstr_hostname[HOSTNAME_MAX_LEN];
+    
+    if(gethostname(cstr_hostname, HOSTNAME_MAX_LEN) != 0){
+        cout << "Error: Cannot get hostname" << endl;
+    }
+    string hostname = string(cstr_hostname);
+    
+    // connect to local zookeeper server
+    ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
+    framework = factory.newClient("cli-node:2181");
+    framework->start();
+   
+    framework->create()->forPath("/worker", (char *) "worker-nodes");
+    string nodename = "/worker/" + hostname;
+    if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, nodename.c_str()) != 0){
+        cout << "Error: Failed to create node " << nodename << endl;
+        //framework->close();
+    }
+}
+
+
 void RunServer() {
   std::string server_address("0.0.0.0:50051");
   WorkerServiceImpl service;
@@ -155,6 +180,8 @@ void RunServer() {
 }
 
 int main(int argc, char** argv) {
+  NotifyZookeeper();
+
   RunServer();
 
   return 0;
