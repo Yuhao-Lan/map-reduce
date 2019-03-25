@@ -473,6 +473,8 @@ int main(int argc, char** argv) {
 
                       input_filename = "split/splitblob." + to_string(i);
 
+                      cout << "redo: " + input_filename << endl;
+
                       if(i % 3 == 0)
                         replicating.push({MACHINEONE, input_filename});
                       else if(i % 3 == 1)
