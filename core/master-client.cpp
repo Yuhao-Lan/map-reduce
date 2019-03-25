@@ -486,12 +486,6 @@ void start_leader(string inputfile) {
 
 }
 
-void watch_leader(zhandle_t *zh, int type,
-                             int state, const char *path,void *watcherCtx) {
-    leader_election(); // re-run leader election
-}
-
-
 void leader_election(string inputfile) {
   LOG(INFO) << "Main.leader_election ....";
   // try to create parent directory /master and node
@@ -515,6 +509,14 @@ void leader_election(string inputfile) {
     return;
   }
 }
+
+
+void watch_leader(zhandle_t *zh, int type,
+                             int state, const char *path,void *watcherCtx) {
+    leader_election(); // re-run leader election
+}
+
+
 
 
 
