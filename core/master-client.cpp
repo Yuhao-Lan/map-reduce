@@ -392,7 +392,6 @@ int main(int argc, char** argv) {
 
   else {
 
-   
     string inputfile = argv[1];
     string flag_log = argv[2];
 
