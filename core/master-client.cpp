@@ -450,6 +450,7 @@ int main(int argc, char** argv) {
             } else {
                   //check remaining rodoing
                   download_file("log_file.txt","log/log_file.txt");
+                  std::ifstream infile("log_file.txt");
                   cout << "checked: split file successfully..." << endl;
 
                    while (std::getline(infile, line,'.')) {
@@ -458,9 +459,7 @@ int main(int argc, char** argv) {
                       numbers.insert(atoi(line.c_str()));
                       cout << line << endl;
                     }
-                    
-
-                  
+                
 
                   }
 
