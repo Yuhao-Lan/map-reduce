@@ -12,6 +12,7 @@
 #include <glog/logging.h>
 #include <glog/raw_logging.h>
 #include <fstream>
+#include <mutex>
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -26,7 +27,7 @@ ofstream log_file;
 
 
 
-
+mutex mapper_mtx;
 
 
 pthread_t tid1[NUM_CHUNK]; 
@@ -136,7 +137,9 @@ void* startmapper(void *arg) {
 
     } 
     //keep track of inputfile successfully
-    
+
+    mapper_mtx.lock();
+
     log_file.open("log_file.txt", fstream::app);
 
     if (log_file.is_open())
@@ -147,6 +150,8 @@ void* startmapper(void *arg) {
     upload_to_blob("log_file.txt","log/log_file.txt");
 
     log_file.close();
+
+    mapper_mtx.unlock();
 
     cout << "Worker received: " << output_filename << std::endl;
 
@@ -208,6 +213,7 @@ void split_and_map_process(string inputfile) {
       td1[i-1].filename = blob;
   }
 
+  mapper_mtx.lock();
    log_file.open("log_file.txt", fstream::app);
 
     if (log_file.is_open())
@@ -218,7 +224,7 @@ void split_and_map_process(string inputfile) {
     upload_to_blob("log_file.txt","log/log_file.txt");
 
     log_file.close();
-
+    mapper_mtx.unlock();
   
 
  for(int i = 0; i < NUM_CHUNK; i++) {
@@ -443,6 +449,7 @@ int main(int argc, char** argv) {
 
             } else {
                   //check remaining rodoing
+                  download_file("log_file.txt","log/log_file.txt");
                   cout << "checked: split file successfully..." << endl;
                    while (std::getline(infile, line,'.')) {
 
