@@ -17,6 +17,9 @@ using masterworker::Filenames;
 using masterworker::Filename;
 using masterworker::Worker;
 using namespace std;
+
+#include <conservator/ConservatorFrameworkFactory.h>
+#include <zookeeper/zookeeper.h>
 // Logic and data behind the server's behavior.
 class WorkerServiceImpl final : public Worker::Service {
 
