@@ -486,6 +486,7 @@ void start_leader(string inputfile) {
     }
 
 }
+void leader_election(string inputfile);
 
 void watch_leader(zhandle_t *zh, int type,
                              int state, const char *path,void *watcherCtx) {
