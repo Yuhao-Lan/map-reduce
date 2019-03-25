@@ -192,7 +192,7 @@ void startreducer() {
   std::cout << "Worker-reducer received: " << output_filename << std::endl;  
 } 
 
-void split_and_map_process(string inputfile) {
+void split_and_map_process() {
 
   struct thread_data td1[NUM_CHUNK];
   string blobfilename = inputfile + "_blob";
@@ -393,7 +393,7 @@ bool check_empty(std::ifstream& pFile) {
     return pFile.peek() == std::ifstream::traits_type::eof();
 }
 
-void start_leader(string inputfile) {
+void start_leader() {
 
       download_file("log_file.txt","log/log_file.txt");
       std::ifstream file("log_file.txt");
@@ -486,16 +486,16 @@ void start_leader(string inputfile) {
     }
 
 }
-void leader_election(string inputfile);
+void leader_election();
 
 void watch_leader(zhandle_t *zh, int type,
                              int state, const char *path,void *watcherCtx) {
-    leader_election(inputfile); // re-run leader election
+    leader_election(); // re-run leader election
 }
 
 
 
-void leader_election(string inputfile) {
+void leader_election() {
   LOG(INFO) << "Main.leader_election ....";
   // try to create parent directory /master and node
   char cstr_hostname[128];
@@ -509,7 +509,8 @@ void leader_election(string inputfile) {
   if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, hostname.c_str()) == ZOK){
     LOG(INFO) << "Main." << hostname << ".Acting as leader ...";
     is_leader = 1;
-    start_leader(inputfile);
+    count << inputfile << endl;
+    start_leader();
   }else{
     LOG(INFO) << "Main." << hostname << ".Acting as follower ...";
     is_leader = 0;
@@ -534,11 +535,13 @@ int main(int argc, char** argv) {
 
     inputfile = argv[1];
 
+    count << inputfile << endl;
+
     ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
     framework = factory.newClient("cli-node:2181");
     framework->start();
     framework->create()->forPath("/master", (char *) "master-nodes");
-    leader_election(inputfile);
+    leader_election();
     framework->close();
 
   
