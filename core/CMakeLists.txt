@@ -3,10 +3,10 @@ project(cs8803_workshop6)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-#set(CMAKE_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(CMAKE_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
@@ -20,10 +20,10 @@ find_package(AzureStorageCpp REQUIRED)
 find_package(SSL REQUIRED)
 find_package(glog REQUIRED)
 
-#find_package(Threads REQUIRED)
-#find_package(Zookeeper REQUIRED)
-#find_package(Check REQUIRED)
-#find_package(Conservator REQUIRED)
+find_package(Threads REQUIRED)
+find_package(Zookeeper REQUIRED)
+find_package(Check REQUIRED)
+find_package(Conservator REQUIRED)
 find_package(Protobuf REQUIRED)
 
 
