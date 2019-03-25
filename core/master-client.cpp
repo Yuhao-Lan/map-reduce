@@ -386,29 +386,7 @@ void rescheduling() {
 
 }
 
-void leader_election(string inputfile) {
-  LOG(INFO) << "Main.leader_election ....";
-  // try to create parent directory /master and node
-  char cstr_hostname[128];
-  if(gethostname(cstr_hostname, 128) != 0){
-    LOG(INFO) << "Error: Cannot get hostname";
-    return;
-  }
-  string hostname = string(cstr_hostname);
-  framework->create()->forPath("/master", (char *) "master-nodes");
-  string nodename = "/master/leader";
-  if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, hostname.c_str()) == ZOK){
-    LOG(INFO) << "Main." << hostname << ".Acting as leader ...";
-    is_leader = 1;
-    start_leader(inputfile);
-  }else{
-    LOG(INFO) << "Main." << hostname << ".Acting as follower ...";
-    is_leader = 0;
-    // watch leader
-    framework->checkExists()->withWatcher(watch_leader, &framework)->forPath("/master/leader");
-    return;
-  }
-}
+
 
 bool check_empty(std::ifstream& pFile) {
     return pFile.peek() == std::ifstream::traits_type::eof();
@@ -506,6 +484,36 @@ void start_leader(string inputfile) {
           }
     }
 
+}
+
+void watch_leader(zhandle_t *zh, int type,
+                             int state, const char *path,void *watcherCtx) {
+    leader_election(); // re-run leader election
+}
+
+
+void leader_election(string inputfile) {
+  LOG(INFO) << "Main.leader_election ....";
+  // try to create parent directory /master and node
+  char cstr_hostname[128];
+  if(gethostname(cstr_hostname, 128) != 0){
+    LOG(INFO) << "Error: Cannot get hostname";
+    return;
+  }
+  string hostname = string(cstr_hostname);
+  framework->create()->forPath("/master", (char *) "master-nodes");
+  string nodename = "/master/leader";
+  if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, hostname.c_str()) == ZOK){
+    LOG(INFO) << "Main." << hostname << ".Acting as leader ...";
+    is_leader = 1;
+    start_leader(inputfile);
+  }else{
+    LOG(INFO) << "Main." << hostname << ".Acting as follower ...";
+    is_leader = 0;
+    // watch leader
+    framework->checkExists()->withWatcher(watch_leader, &framework)->forPath("/master/leader");
+    return;
+  }
 }
 
 
