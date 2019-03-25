@@ -539,9 +539,11 @@ int main(int argc, char** argv) {
     cout << inputfile << endl;
     ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
     framework = factory.newClient("cli-node:2181");
-    cout << "create... cli-node:2181" << endl;
+    cout << "1" << endl;
     framework->start();
+    cout << "2" << endl;
     framework->create()->forPath("/master", (char *) "master-nodes");
+    cout << "3" << endl;
     leader_election();
     framework->close();
 
