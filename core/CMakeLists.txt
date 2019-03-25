@@ -21,17 +21,19 @@ find_package(SSL REQUIRED)
 find_package(glog REQUIRED)
 
 find_package(Threads REQUIRED)
-find_package(Zookeeper REQUIRED)
+#find_package(Zookeeper REQUIRED)
 find_package(Check REQUIRED)
 find_package(Conservator REQUIRED)
 find_package(Protobuf REQUIRED)
 
 
 include_directories(${CHECK_INCLUDE_DIRS})
-include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
+#include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
 include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
 include_directories(/usr/local/include)
 include_directories(rpc_generated)
+include_directories(${GENERATED_PROTOBUF_PATH} /usr/local/include/ /usr/include/zookeeper)
+link_libraries(grpc++_unsecure grpc gpr ${PROTOBUF_LIBRARY} conservator-framework zookeeper_mt /usr/lib/x86_64-linux-gnu /usr/local/lib/)
 
 link_directories(/usr/local/lib)
 link_libraries(grpc++_unsecure grpc gpr ${PROTOBUF_LIBRARY})
