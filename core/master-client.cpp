@@ -457,9 +457,17 @@ int main(int argc, char** argv) {
 
                    
                       numbers.insert(atoi(line.c_str()));
-                      cout << line << endl;
-  
+                     
                   }
+                  std::getline(infile, line);
+                  cout << line << endl;
+                  numbers.insert(atoi(line.c_str()));
+                  std::getline(infile, line);
+                  cout << line << endl;
+                  numbers.insert(atoi(line.c_str()));
+                  std::getline(infile, line);
+                  cout << line << endl;
+                  numbers.insert(atoi(line.c_str()));
 
                   string input_filename;
                   //find the non-mapped file
