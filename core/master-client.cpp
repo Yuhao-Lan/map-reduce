@@ -462,6 +462,7 @@ int main(int argc, char** argv) {
                       continue;
 
                     numbers.insert(atoi(line.c_str()));
+                    cout << line << endl;
 
                   }
 
