@@ -53,6 +53,7 @@ bool MACHINETWOOK = true;
 bool MACHINETHREEOK = true;
 unique_ptr<ConservatorFramework> framework;
 int is_leader = 0;
+string inputfile;
 
 
 
@@ -513,7 +514,7 @@ void leader_election(string inputfile) {
 
 void watch_leader(zhandle_t *zh, int type,
                              int state, const char *path,void *watcherCtx) {
-    leader_election(); // re-run leader election
+    leader_election(inputfile); // re-run leader election
 }
 
 
@@ -528,7 +529,7 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-    string inputfile = argv[1];
+    inputfile = argv[1];
 
     ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
     framework = factory.newClient("cli-node:2181");
