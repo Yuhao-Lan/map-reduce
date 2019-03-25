@@ -164,7 +164,7 @@ void startreducer() {
     REDUCERMAHINE = MACHINETHREE;
 
   MasterClient cli(grpc::CreateChannel(REDUCERMAHINE, grpc::InsecureChannelCredentials()));
-  std::string input_filenames("mapresults/");
+  std::string input_filenames("mapresults1/");
   std::string output_filename = cli.StartReducer(input_filenames);
 
   if(output_filename == "RPC failed") {
@@ -402,6 +402,7 @@ int main(int argc, char** argv) {
 
           start_remapping();
 
+          cout << "starting reducer" << endl;
           startreducer();
 
           //check reducing whether need to redo

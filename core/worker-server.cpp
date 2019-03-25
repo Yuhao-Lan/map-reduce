@@ -91,7 +91,7 @@ class WorkerServiceImpl final : public Worker::Service {
         
         //upload
         response->set_filename(map_output_file);
-        string blob = "mapresults/" + map_output_file;
+        string blob = "mapresults1/" + map_output_file;
         upload_to_blob(map_output_file, blob);
         LOG(INFO) <<  "  uploading  " <<  map_output_file << " to " << blob;
 
