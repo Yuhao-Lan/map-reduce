@@ -400,7 +400,7 @@ void start_leader() {
 
       if(check_empty(file)) {
 
-          split_and_map_process(inputfile);
+          split_and_map_process();
 
           start_remapping();
 
@@ -430,7 +430,7 @@ void start_leader() {
 
               cout << "rodo: splitting..." << endl;
 
-               split_and_map_process(inputfile);
+               split_and_map_process();
                start_remapping();
                startreducer();
               //check reducing whether need to redo
