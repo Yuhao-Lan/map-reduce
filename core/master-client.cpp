@@ -497,6 +497,7 @@ void watch_leader(zhandle_t *zh, int type,
 
 void leader_election() {
   LOG(INFO) << "Main.leader_election ....";
+  cout << "leader election..." << endl;
   // try to create parent directory /master and node
   char cstr_hostname[128];
   if(gethostname(cstr_hostname, 128) != 0){
