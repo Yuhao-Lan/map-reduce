@@ -417,6 +417,7 @@ int main(int argc, char** argv) {
             cout << "Rescheduling Reducing... " << endl;
             startreducer();
           }
+          upload_to_blob("log_file.txt","log/log_file.txt");
 
     } else {
             download_file("log_file.txt","log/log_file.txt");
@@ -445,29 +446,26 @@ int main(int argc, char** argv) {
                 cout << "Rescheduling Reducing... " << endl;
                 startreducer();
               }
+              upload_to_blob("log_file.txt","log/log_file.txt");
 
 
             } else {
                   //check remaining rodoing
                   download_file("log_file.txt","log/log_file.txt");
-                  std::ifstream infile("log_file.txt");
-                  line="";
                   cout << "checked: split file successfully..." << endl;
                    while (std::getline(infile, line,'.')) {
 
-                   
-                      numbers.insert(atoi(line.c_str()));
-                     
+                    if(line.compare("RPC failed")== 0)
+                      continue;
+
+                    if(line.compare("splitblob") == 0)
+                      continue;
+                    if(line.compare("map") == 0)
+                      continue;
+
+                    numbers.insert(atoi(line.c_str()));
+
                   }
-                  std::getline(infile, line);
-                  cout << line << endl;
-                  numbers.insert(atoi(line.c_str()));
-                  std::getline(infile, line);
-                  cout << line << endl;
-                  numbers.insert(atoi(line.c_str()));
-                  std::getline(infile, line);
-                  cout << line << endl;
-                  numbers.insert(atoi(line.c_str()));
 
                   string input_filename;
                   //find the non-mapped file
@@ -497,6 +495,7 @@ int main(int argc, char** argv) {
                   startreducer();
 
                 }
+                upload_to_blob("log_file.txt","log/log_file.txt");
 
           }
 
