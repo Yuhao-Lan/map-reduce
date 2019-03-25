@@ -451,19 +451,16 @@ int main(int argc, char** argv) {
                   //check remaining rodoing
                   download_file("log_file.txt","log/log_file.txt");
                   cout << "checked: split file successfully..." << endl;
-                  
+
                    while (std::getline(infile, line,'.')) {
 
-                    if(line.compare("RPC failed")== 0)
-                      continue;
+                    if(line.compare("RPC failed")!= 0 && line.compare("splitblob") != 0 && line.compare("map") != 0) {
+                      numbers.insert(atoi(line.c_str()));
+                      cout << line << endl;
+                    }
+                    
 
-                    if(line.compare("splitblob") == 0)
-                      continue;
-                    if(line.compare("map") == 0)
-                      continue;
-
-                    numbers.insert(atoi(line.c_str()));
-                    cout << line << endl;
+                  
 
                   }
 
