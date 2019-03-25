@@ -51,6 +51,9 @@ string REDUCERMAHINE;
 bool MACHINEONEOK = true;
 bool MACHINETWOOK = true;
 bool MACHINETHREEOK = true;
+unique_ptr<ConservatorFramework> framework;
+int is_leader = 0;
+
 
 
 
