@@ -386,8 +386,8 @@ void rescheduling() {
 void leader_election(string inputfile) {
   LOG(INFO) << "Main.leader_election ....";
   // try to create parent directory /master and node
-  char cstr_hostname[HOSTNAME_MAX_LEN];
-  if(gethostname(cstr_hostname, HOSTNAME_MAX_LEN) != 0){
+  char cstr_hostname[128];
+  if(gethostname(cstr_hostname, 128) != 0){
     LOG(INFO) << "Error: Cannot get hostname";
     return;
   }
@@ -407,7 +407,7 @@ void leader_election(string inputfile) {
   }
 }
 
-bool is_empty(std::ifstream& pFile) {
+bool check_empty(std::ifstream& pFile) {
     return pFile.peek() == std::ifstream::traits_type::eof();
 }
 
@@ -416,7 +416,7 @@ void start_leader(string inputfile) {
       download_file("log_file.txt","log/log_file.txt");
       std::ifstream file("log_file.txt");
 
-      if(is_empty(file)) {
+      if(check_empty(file)) {
 
           split_and_map_process(inputfile);
 
