@@ -23,11 +23,11 @@ find_package(glog REQUIRED)
 find_package(Threads REQUIRED)
 #find_package(Zookeeper REQUIRED)
 #find_package(Check REQUIRED)
-find_package(Conservator REQUIRED)
+#find_package(Conservator REQUIRED)
 find_package(Protobuf REQUIRED)
 
 
-include_directories(${CHECK_INCLUDE_DIRS})
+#include_directories(${CHECK_INCLUDE_DIRS})
 #include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
 include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
 include_directories(/usr/local/include)
