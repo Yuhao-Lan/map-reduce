@@ -28,8 +28,8 @@ find_package(Protobuf REQUIRED)
 
 
 include_directories(${CHECK_INCLUDE_DIRS})
-#include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
-#include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
+include_directories(${ZOOKEEPER_INCLUDE_DIR}/zookeeper)
+include_directories(${CONSERVATOR_INCLUDE_DIR}/conservator)
 include_directories(/usr/local/include)
 include_directories(rpc_generated)
 
@@ -40,5 +40,5 @@ file(GLOB MY_SERVER_SRC worker-server.cpp split_file.cpp "rpc_generated/*.cc")
 file(GLOB MY_CLIENT_SRC master-client.cpp split_file.cpp "rpc_generated/*.cc")
 add_executable(worker ${MY_SERVER_SRC})
 add_executable(master ${MY_CLIENT_SRC})
-target_link_libraries(worker glog::glog ${Boost_LIBRARIES} ${SSL_LIBRARIES} ${CASABLANCA_LIBRARY} ${AZURE_STORAGE_LIBRARY})
-target_link_libraries(master glog::glog ${Boost_LIBRARIES} ${SSL_LIBRARIES} ${CASABLANCA_LIBRARY} ${AZURE_STORAGE_LIBRARY})
+target_link_libraries(worker ${ZOOKEEPER_LIBRARIES} ${CONSERVATOR_LIBRARIES} glog::glog ${Boost_LIBRARIES} ${SSL_LIBRARIES} ${CASABLANCA_LIBRARY} ${AZURE_STORAGE_LIBRARY} ${ZOOKEEPER_LIBRARIES} ${CONSERVATOR_LIBRARIES})
+target_link_libraries(master ${ZOOKEEPER_LIBRARIES} ${CONSERVATOR_LIBRARIES} glog::glog ${Boost_LIBRARIES} ${SSL_LIBRARIES} ${CASABLANCA_LIBRARY} ${AZURE_STORAGE_LIBRARY} ${ZOOKEEPER_LIBRARIES} ${CONSERVATOR_LIBRARIES})
