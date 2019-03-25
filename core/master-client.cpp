@@ -451,6 +451,7 @@ int main(int argc, char** argv) {
                   //check remaining rodoing
                   download_file("log_file.txt","log/log_file.txt");
                   cout << "checked: split file successfully..." << endl;
+                  
                    while (std::getline(infile, line,'.')) {
 
                     if(line.compare("RPC failed")== 0)
