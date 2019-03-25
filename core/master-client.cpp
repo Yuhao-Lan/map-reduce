@@ -374,7 +374,6 @@ void rescheduling() {
   }
 
 
-
 }
 
 
@@ -473,7 +472,7 @@ int main(int argc, char** argv) {
                 rescheduling();
                 start_remapping();
                 startreducer();
-                //check reducing whether need to redo
+                //check reducing whether need to redo ///
                 if(!redoreducing.empty()) {
                   cout << "Rescheduling Reducing... " << endl;
                   startreducer();
