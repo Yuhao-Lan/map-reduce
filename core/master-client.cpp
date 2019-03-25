@@ -95,6 +95,7 @@ class MasterClient {
     ClientContext context;
     Status status = stub_->StartReducer(&context, filenames, &return_filename);
     if (status.ok()) {
+      cout << "worker received: " + filenames << endl;
       return return_filename.filename();
     } else {
       std::cout << status.error_code() << ": " << status.error_message() << std::endl;
@@ -164,7 +165,7 @@ void startreducer() {
     REDUCERMAHINE = MACHINETHREE;
 
   MasterClient cli(grpc::CreateChannel(REDUCERMAHINE, grpc::InsecureChannelCredentials()));
-  std::string input_filenames("mapresults1/");
+  std::string input_filenames("mapresults/");
   std::string output_filename = cli.StartReducer(input_filenames);
 
   if(output_filename == "RPC failed") {
