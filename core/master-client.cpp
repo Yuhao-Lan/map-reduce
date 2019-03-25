@@ -95,7 +95,7 @@ class MasterClient {
     ClientContext context;
     Status status = stub_->StartReducer(&context, filenames, &return_filename);
     if (status.ok()) {
-      cout << "worker received: " + filenames << endl;
+      cout << "worker received: " + str_filenames << endl;
       return return_filename.filename();
     } else {
       std::cout << status.error_code() << ": " << status.error_message() << std::endl;
