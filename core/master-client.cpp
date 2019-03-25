@@ -509,7 +509,7 @@ void leader_election() {
   if(framework->create()->withFlags(ZOO_EPHEMERAL)->forPath(nodename, hostname.c_str()) == ZOK){
     LOG(INFO) << "Main." << hostname << ".Acting as leader ...";
     is_leader = 1;
-    count << inputfile << endl;
+    cout << inputfile << endl;
     start_leader();
   }else{
     LOG(INFO) << "Main." << hostname << ".Acting as follower ...";
@@ -535,7 +535,7 @@ int main(int argc, char** argv) {
 
     inputfile = argv[1];
 
-    count << inputfile << endl;
+    cout << inputfile << endl;
 
     ConservatorFrameworkFactory factory = ConservatorFrameworkFactory();
     framework = factory.newClient("cli-node:2181");
